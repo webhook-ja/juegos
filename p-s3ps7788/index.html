@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+<title>Panel</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f1220;color:#e8eaf6;-webkit-tap-highlight-color:transparent}
+header{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;background:#171b2e;border-bottom:1px solid #262b45}
+h1{font-size:16px;margin:0}h2{font-size:14px;margin:0 0 10px;color:#aab}
+main{max-width:1100px;margin:0 auto;padding:12px}
+.card{background:#171b2e;border:1px solid #262b45;border-radius:14px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.kpi{margin:0}.kpi .v{font-size:20px;font-weight:700;margin-top:4px}.kpi .l{font-size:11px;color:#99a}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:760px){.two{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:12.5px}th,td{padding:7px 6px;border-bottom:1px solid #262b45;text-align:left;white-space:nowrap}th{color:#99a}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+input,select{width:100%;padding:10px;border-radius:10px;border:1px solid #333a5c;background:#0f1220;color:#fff;font-size:15px}
+button{padding:9px 14px;border:0;border-radius:10px;background:#5b6cff;color:#fff;font-weight:600;cursor:pointer;font-size:14px}button.sec{background:#2a3050}
+.err{color:#ff7b7b;min-height:18px;font-size:14px}.ok{color:#6fe39a;font-size:14px}
+#login{max-width:360px;margin:12vh auto}.hidden{display:none!important}.muted{color:#889;font-size:12px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.chip{flex:0 0 auto;padding:9px 14px;border-radius:999px;background:#232842;color:#cdd;border:1px solid #333a5c;font-size:14px;min-height:38px}
+.chip.on{background:#5b6cff;color:#fff;border-color:#5b6cff}
+.act .chip{background:#2c2350;border-color:#6b4cff}.act .chip b{margin-left:6px}
+.frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.lbl{font-size:11px;color:#99a;margin:0 0 3px}
+</style></head><body>
+<div id="login" class="card"><h1>Panel privado</h1><p class="muted">Acceso solo para el propietario.</p>
+<form id="lf"><label>Contraseña</label><input type="password" id="pw" autocomplete="current-password" required style="margin:6px 0 10px"><div class="err" id="lerr"></div><button>Entrar</button></form></div>
+<div id="app" class="hidden">
+<header><h1>📊 Vending Town</h1><div><button class="sec" id="rf">↻</button> <button class="sec" id="lo">Salir</button></div></header>
+<main>
+<div class="card">
+ <div class="chips" id="rng"></div>
+ <div id="custom" class="frow hidden"><div><p class="lbl">Desde</p><input type="date" id="d1"></div><div><p class="lbl">Hasta</p><input type="date" id="d2"></div></div>
+ <div class="frow">
+  <div><p class="lbl">Juego / minijuego</p><select id="fg"></select></div>
+  <div><p class="lbl">Origen</p><select id="fs"></select></div>
+  <div><p class="lbl">País</p><select id="fc"></select></div>
+ </div>
+ <div class="chips act" id="act" style="margin-top:10px"></div>
+</div>
+<div class="grid" id="kpis"></div><p class="muted" id="gen"></p>
+<div class="card"><h2>Ganancias en el tiempo</h2><canvas id="cDay" height="110"></canvas></div>
+<div class="two">
+ <div class="card"><h2>Ganancia por juego</h2><canvas id="cGame" height="180"></canvas></div>
+ <div class="card"><h2>Ganancia por origen</h2><canvas id="cSrc" height="180"></canvas></div>
+</div>
+<div class="card"><h2>Por día</h2><div class="scroll"><table id="tDay"></table></div></div>
+<div class="card"><h2>Por juego / minijuego</h2><div class="scroll"><table id="tGame"></table></div></div>
+<div class="card"><h2>Por zona y tipo de anuncio</h2><div class="scroll"><table id="tZone"></table></div></div>
+<div class="card"><h2>Por resultado (reward_event_type)</h2><div class="scroll"><table id="tRw"></table></div></div>
+<div class="card"><h2>Por país</h2><div class="scroll"><table id="tC"></table></div></div>
+<div class="card"><h2>Top jugadores (ganancia generada)</h2><div class="scroll"><table id="tTop"></table></div></div>
+<div class="card"><h2>De dónde sale cada ganancia (últimos 50)</h2><div class="scroll"><table id="tLast"></table></div></div>
+<div class="card"><h2>Salas activas (24 h)</h2><div class="scroll"><table id="tRooms"></table></div></div>
+<div class="card" style="max-width:420px"><h2>Cambiar contraseña</h2>
+<form id="cf"><input type="password" id="cur" placeholder="Contraseña actual" required style="margin-bottom:8px"><input type="password" id="np1" placeholder="Nueva (mín. 12)" minlength="12" required style="margin-bottom:8px"><input type="password" id="np2" placeholder="Repite la nueva" minlength="12" required style="margin-bottom:8px"><div class="err" id="cerr"></div><div class="ok" id="cok"></div><button>Cambiar</button></form></div>
+</main></div>
+<script>
+const API="https://nlkltjywdupkqiwctzpr.supabase.co/functions/v1/admin-stats";
+const TG=window.Telegram&&Telegram.WebApp;if(TG&&TG.initData){TG.ready();TG.expand();}
+const INIT=TG&&TG.initData?TG.initData:undefined;
+const $=id=>document.getElementById(id),usd=n=>"$"+(Number(n)||0).toFixed(4),pct=n=>isFinite(n)?(n*100).toFixed(1)+"%":"—";
+const esc=s=>String(s??"—").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let D=null,charts=[];const F={range:"7",d1:"",d2:"",g:"",s:"",c:""};
+async function call(b){const r=await fetch(API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...b,init_data:INIT})});const d=await r.json().catch(()=>({error:"Respuesta no válida"}));if(!r.ok){const e=new Error(d.error||("Error "+r.status));e.expired=d.expired;throw e;}return d;}
+const tok=()=>{try{const t=JSON.parse(localStorage.getItem("vt_adm")||"null");return t&&t.exp>Date.now()?t.tok:null;}catch{return null}};
+async function load(){const t=tok();if(!t)return show(false);try{D=await call({token:t,days:365});show(true);build();}catch(e){localStorage.removeItem("vt_adm");show(false);$("lerr").textContent=e.message;}}
+function show(a){$("app").classList.toggle("hidden",!a);$("login").classList.toggle("hidden",a);}
+const ZN={"12014079":"Rewarded interstitial","12014080":"Rewarded popup","12014081":"In-app interstitial"};
+const adType=z=>String(z)==="12014081"?"interstitial":(ZN[z]?"rewarded":"otro");
+const src=r=>r.kind==="ref"?"referido":adType(r.z);
+const day=t=>new Date(t).toLocaleDateString("sv-SE",{timeZone:"Europe/Madrid"});
+function inRange(t){const d=day(t),today=day(Date.now());if(F.range==="custom"){return(!F.d1||d>=F.d1)&&(!F.d2||d<=F.d2);}const n=+F.range;return d>day(Date.now()-n*864e5)&&d<=today;}
+function opts(el,label,vals,cur){el.innerHTML=`<option value="">${label}</option>`+[...vals].sort().map(v=>`<option ${v===cur?"selected":""}>${esc(v)}</option>`).join("");}
+function build(){
+ $("rng").innerHTML=[["1","Hoy"],["7","7 días"],["30","30 días"],["90","90 días"],["custom","📅 Personalizado"]].map(([k,l])=>`<button class="chip ${F.range===k?"on":""}" data-r="${k}">${l}</button>`).join("");
+ $("custom").classList.toggle("hidden",F.range!=="custom");
+ opts($("fg"),"Todos",new Set([...D.postbacks.map(r=>r.g),...D.sessions.map(r=>r.g)]),F.g);
+ opts($("fs"),"Todos",new Set(["rewarded","interstitial","referido","otro"]),F.s);
+ opts($("fc"),"Todos",new Set([...D.postbacks,...D.sessions].map(r=>r.c).filter(Boolean)),F.c);
+ render();}
+function render(){
+ const act=[];if(F.g)act.push(["g","Juego: "+F.g]);if(F.s)act.push(["s","Origen: "+F.s]);if(F.c)act.push(["c","País: "+F.c]);if(F.range==="custom")act.push(["range","Fechas: "+(F.d1||"…")+" → "+(F.d2||"…")]);
+ $("act").innerHTML=act.map(([k,l])=>`<button class="chip" data-x="${k}">${esc(l)}<b>✕</b></button>`).join("")+(act.length||F.range!=="7"?`<button class="chip" id="rst">↺ Restablecer</button>`:"");
+ const P=D.postbacks.filter(r=>inRange(r.t)&&(!F.g||r.g===F.g)&&(!F.s||adType(r.z)===F.s)&&(!F.c||r.c===F.c));
+ const S=D.sessions.filter(r=>inRange(r.t)&&(!F.g||r.g===F.g)&&(!F.c||r.c===F.c));
+ const R=D.referrals.filter(r=>inRange(r.t)&&(!F.s||F.s==="referido")&&!F.g&&!F.c);
+ const PP=F.s==="referido"?[]:P,val=r=>r.rt==="valued",paid=PP.filter(val),rev=paid.reduce((a,r)=>a+r.p,0),revAll=PP.reduce((a,r)=>a+r.p,0);
+ const users=new Set(S.map(r=>r.u).filter(Boolean)),adUsers=new Set(PP.map(r=>r.u).filter(Boolean));
+ const today=day(Date.now()),dau=new Set(D.sessions.filter(r=>day(r.t)===today).map(r=>r.u)).size,wau=new Set(D.sessions.filter(r=>Date.now()-new Date(r.t)<7*864e5).map(r=>r.u)).size;
+ const imp=PP.filter(r=>r.ev==="impression").length,clk=PP.filter(r=>r.ev==="click").length;
+ const rooms=D.rooms.filter(r=>r.status!=="finished"&&r.status!=="closed");
+ const K=[["💰 Ganancia pagada",usd(rev)],["Ganancia estimada total",usd(revAll)],["👥 Visitas",S.filter(r=>r.ev==="visit").length],["Jugadores únicos",users.size],["DAU hoy",dau],["Activos 7 días",wau],["ARPU (pagado/jugador)",users.size?usd(rev/users.size):"—"],["Anuncios por jugador",users.size?(PP.length/users.size).toFixed(2):"—"],["Anuncios vistos",PP.length],["Impresiones",imp],["Clics",clk],["CTR",imp?pct(clk/imp):"—"],["Fill pagado (valued)",PP.length?pct(paid.length/PP.length):"—"],["Usuarios con anuncios",adUsers.size],["🤝 Referidos",R.length],["🎲 Salas activas",rooms.length]];
+ $("kpis").innerHTML=K.map(k=>`<div class="card kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div></div>`).join("");
+ $("gen").textContent="Actualizado: "+new Date(D.generated_at).toLocaleString("es-ES",{timeZone:"Europe/Madrid"})+" (hora de Madrid)";
+ const grp=(arr,key)=>{const m={};for(const r of arr){const k=key(r)??"(vacío)";const g=m[k]||={key:k,n:0,v:0,rev:0,tot:0,imp:0,clk:0,u:new Set()};g.n++;g.tot+=r.p;if(r.ev==="impression")g.imp++;if(r.ev==="click")g.clk++;if(val(r)){g.v++;g.rev+=r.p;}if(r.u)g.u.add(r.u);}return Object.values(m).sort((a,b)=>b.rev-a.rev||b.n-a.n);};
+ const cols=k=>[[k,r=>r.key],["Eventos",r=>r.n],["Pagados",r=>r.v],["Ganancia pagada",r=>usd(r.rev)],["Total est.",r=>usd(r.tot)],["Usuarios",r=>r.u.size]];
+ const T=(el,c,rows)=>{$(el).innerHTML="<tr>"+c.map(x=>"<th>"+x[0]+"</th>").join("")+"</tr>"+(rows.length?rows.map(r=>"<tr>"+c.map(x=>"<td>"+esc(x[1](r))+"</td>").join("")+"</tr>").join(""):`<tr><td colspan=${c.length} class=muted>Sin datos en este filtro</td></tr>`);};
+ const byDay=grp(PP,r=>day(r.t)).sort((a,b)=>a.key<b.key?-1:1),visDay={};S.forEach(r=>{const d=day(r.t);visDay[d]=(visDay[d]||new Set()).add(r.u)});
+ T("tDay",[["Día",r=>r.key],["Eventos",r=>r.n],["Pagados",r=>r.v],["Ganancia",r=>usd(r.rev)],["Jugadores",r=>visDay[r.key]?.size||0]],byDay.slice().reverse());
+ const byGame=grp(PP,r=>r.g);T("tGame",[...cols("Juego"),["Visitas",r=>S.filter(s=>s.g===r.key).length]],byGame);
+ T("tZone",[...cols("Zona"),["Tipo",r=>adType(r.key)],["Nombre",r=>ZN[r.key]||"—"]],grp(PP,r=>String(r.z??"—")));
+ T("tRw",cols("Resultado"),grp(PP,r=>r.rt));
+ T("tC",[...cols("País"),["Visitas",r=>S.filter(s=>(s.c||"(desconocido)")===r.key).length]],grp(PP,r=>r.c||"(desconocido)"));
+ const um={};PP.forEach(r=>{if(r.u)um[r.u]=r.um});T("tTop",[["Jugador",r=>um[r.key]||r.key],["Anuncios",r=>r.n],["Pagados",r=>r.v],["Ganancia",r=>usd(r.rev)]],grp(PP.filter(r=>r.u),r=>r.u).slice(0,15));
+ T("tLast",[["Fecha",r=>new Date(r.t).toLocaleString("es-ES",{timeZone:"Europe/Madrid"})],["Jugador",r=>r.um],["Juego",r=>r.g],["Origen",r=>adType(r.z)],["Evento",r=>r.ev],["Resultado",r=>r.rt],["Precio",r=>usd(r.p)],["País",r=>r.c]],PP.slice(0,50));
+ T("tRooms",[["Sala",r=>r.code],["Estado",r=>r.status],["Jugadores",r=>r.n+"/4"],["Última actividad",r=>new Date(r.t).toLocaleTimeString("es-ES",{timeZone:"Europe/Madrid"})]],rooms);
+ charts.forEach(c=>c.destroy());charts=[];Chart.defaults.color="#aab";Chart.defaults.borderColor="#262b45";
+ charts.push(new Chart($("cDay"),{type:"line",data:{labels:byDay.map(x=>x.key.slice(5)),datasets:[{label:"Ganancia pagada ($)",data:byDay.map(x=>x.rev),borderColor:"#5b6cff",backgroundColor:"#5b6cff33",fill:true,tension:.3},{label:"Anuncios",data:byDay.map(x=>x.n),borderColor:"#6fe39a",yAxisID:"y1",tension:.3}]},options:{animation:false,scales:{y:{beginAtZero:true},y1:{beginAtZero:true,position:"right",grid:{drawOnChartArea:false}}}}}));
+ charts.push(new Chart($("cGame"),{type:"bar",data:{labels:byGame.map(x=>x.key),datasets:[{label:"$",data:byGame.map(x=>x.rev),backgroundColor:"#ffb44c"}]},options:{animation:false,indexAxis:"y",plugins:{legend:{display:false}}}}));
+ const bs=grp(PP,r=>adType(r.z));const sl=[...bs.map(x=>x.key),"referido"],sv=[...bs.map(x=>x.rev),D.referral_rewards.filter(r=>inRange(r.t)).reduce((a,r)=>a+r.rw,0)];
+ charts.push(new Chart($("cSrc"),{type:"doughnut",data:{labels:sl,datasets:[{data:sv.some(v=>v>0)?sv:[...bs.map(x=>x.n),R.length],backgroundColor:["#5b6cff","#6fe39a","#ffb44c","#ff6b8a","#4cc9ff"]}]},options:{animation:false}}));
+}
+document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.r){F.range=b.dataset.r;build();}
+ else if(b.dataset.x){const k=b.dataset.x;if(k==="range")F.range="7";else F[k]="";build();}
+ else if(b.id==="rst"){Object.assign(F,{range:"7",d1:"",d2:"",g:"",s:"",c:""});$("d1").value=$("d2").value="";build();}});
+$("fg").onchange=e=>{F.g=e.target.value;render()};$("fs").onchange=e=>{F.s=e.target.value;render()};$("fc").onchange=e=>{F.c=e.target.value;render()};
+$("d1").onchange=e=>{F.d1=e.target.value;render()};$("d2").onchange=e=>{F.d2=e.target.value;render()};
+$("lf").onsubmit=async e=>{e.preventDefault();$("lerr").textContent="";try{const r=await call({password:$("pw").value,action:"login"});localStorage.setItem("vt_adm",JSON.stringify({tok:r.token,exp:Date.now()+r.expires_in*1000-6e4}));$("pw").value="";load();}catch(err){$("lerr").textContent=err.message;}};
+$("lo").onclick=async()=>{const t=tok();localStorage.removeItem("vt_adm");if(t)await call({token:t,action:"logout"}).catch(()=>{});location.reload();};$("rf").onclick=load;
+$("cf").onsubmit=async e=>{e.preventDefault();$("cerr").textContent=$("cok").textContent="";if($("np1").value!==$("np2").value){$("cerr").textContent="No coinciden";return;}
+ try{await call({token:tok(),password:$("cur").value,action:"change_password",new_password:$("np1").value});$("cf").reset();$("cok").textContent="Contraseña cambiada";}catch(err){$("cerr").textContent=err.message;}};
+load();
+</script></body></html>
