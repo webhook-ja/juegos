@@ -239,7 +239,7 @@ return{play}})();
 let busy=false;
 async function turn(p,n){window.VT_GAME='tablero';const _bm=money.slice(),_bt=tok.slice();dice.classList.remove('roll');void dice.offsetWidth;dice.classList.add('roll');if(!(await (window.DICE3D?DICE3D(n,p):false))){for(let k=0;k<8;k++){dice.textContent=1+Math.floor(Math.random()*12);await new Promise(r=>setTimeout(r,45))}}dice.textContent=n;
 for(let i=0;i<n;i++){pos[p]=(pos[p]+1)%N;if(pos[p]==0){money[p]+=200;tok[p]++;upd();snd(1200,.2)}place(p);snd(500+i*80,.08);await new Promise(r=>setTimeout(r,260))}
-const t=T[pos[p]],who=PN(p);let m=who+' cae en '+t[2]+'. ';
+const t=T[pos[p]],who=PN(p);if(p===0&&window.TIP){try{if(t[3]&&own[pos[p]]===undefined)await TIP('compra');else if(t[3]&&own[pos[p]]===p)await TIP('casa');else if(t[0]=='mini'){await TIP('mgcas');await TIP('anuncio')}else if(t[0]=='chance')await TIP('carta');else if(['coin','gift','lot','jail'].includes(t[0]))await TIP('especial')}catch(e){}}let m=who+' cae en '+t[2]+'. ';
 if(t[3]){if(own[pos[p]]===undefined){let tk=false;const can=money[p]>=t[3]&&confirm('¿Comprar '+t[2]+' por '+t[3]+'?');if(!can&&money[p]<t[3]&&tok[p]>=1&&confirm('No te llega. ¿Comprar '+t[2]+' con 1 🎟 + todo tu dinero ('+money[p]+')?'))tk=true;if(can||tk){if(tk){tok[p]--;money[p]=0;m+='(con 🎟) '}else money[p]-=t[3];own[pos[p]]=p;els[pos[p]].classList.add("own"+p);els[pos[p]].querySelector("small").innerHTML+="<br>"+PN(p);m+='¡Comprada!';snd(900,.3)}}
 else if(own[pos[p]]!=p){const rent=Math.round(t[3]*(t[0]=='vend'?.5:.25)*HMUL[houses[pos[p]]||0]);if(tok[p]>0&&confirm('Alquiler de '+rent+' a '+PN(own[pos[p]])+'. ¿Usar 1 🎟 para no pagar?')){tok[p]--;m+='Usa 1 🎟 y no paga alquiler.'}else{money[p]-=rent;money[own[pos[p]]]+=rent;m+='Paga '+rent+' a '+PN(own[pos[p]])+'.'}snd(200,.3)}else{m+=await BUILD(p,pos[p],t)}}
 else if(t[0]=='coin'){money[p]+=100;m+='+100 de oro';snd(1000,.2)}
@@ -742,4 +742,48 @@ body.th-halloween{background:radial-gradient(900px 500px at 50% -10%,#5a2a7a,tra
 .th-halloween .wzcloak{fill:#3b2159}.th-halloween .lflame{animation:mflk 1s steps(2) infinite}
 .th-halloween #evc:not(.bank):not(.note):not(.bad){background:linear-gradient(135deg,#e8d8b0,#b89a6a)!important}
 </style>
+<style>#tip{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:12500;width:min(94vw,380px);display:none;gap:8px;align-items:flex-end}
+#tip svg{flex:0 0 64px;width:64px;height:80px;filter:drop-shadow(0 3px 0 rgba(0,0,0,.3))}
+#tipb{flex:1;background:linear-gradient(#f6e7c1,#e2c98f);border:3px solid #2a1a0e;border-radius:18px;padding:10px 12px;color:#2a1a0e;font:15px/1.3 'MedievalSharp',Georgia,serif;box-shadow:0 5px 0 #2a1a0e;position:relative;animation:tipin .3s cubic-bezier(.2,1.5,.4,1)}
+#tipb:before{content:"";position:absolute;left:-12px;bottom:16px;border:9px solid transparent;border-right-color:#2a1a0e;border-left:0}
+#tipb b{display:block;font-family:'Cinzel Decorative',serif;font-size:14px;margin-bottom:3px}#tipb .tb{display:flex;gap:6px;margin-top:8px;justify-content:flex-end}
+#tipb button{font-size:11px;padding:6px 10px;min-height:0;background:#f3c33b;color:#2a1a0e;border:2px solid #2a1a0e}#tipb button.no{background:#d9bf86}
+@keyframes tipin{from{transform:scale(.6);opacity:0}}
+.th-halloween #tipb{background:linear-gradient(#3a2350,#24142f);color:#ffe9c8;border-color:#ff8a1f}.th-halloween #tipb button{background:#ff8a1f}
+#vthelp{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:56px;z-index:12000;width:40px;height:40px;border-radius:50%!important;border:3px solid #2a1a0e;background:linear-gradient(#ffd76a,#c98d1f);font:bold 20px Georgia;padding:0;box-shadow:0 3px 0 #2a1a0e;cursor:pointer;color:#2a1a0e}
+#help{position:fixed;inset:0;z-index:12600;background:rgba(10,8,20,.7);display:none;align-items:center;justify-content:center}
+#helpb{width:min(94vw,440px);max-height:86vh;overflow:auto;background:linear-gradient(#f6e7c1,#e2c98f);border:5px solid #2a1a0e;border-radius:22px;box-shadow:0 0 0 3px #f3c33b,0 8px 0 #2a1a0e;padding:14px;color:#2a1a0e;font:15px/1.35 Georgia,serif}
+#helpb h2{margin:0 0 8px;font-family:'Cinzel Decorative',serif;text-align:center}#helpb details{background:rgba(255,255,255,.35);border:2px solid #2a1a0e;border-radius:14px;margin:6px 0;padding:6px 10px}
+#helpb summary{font-family:'MedievalSharp',serif;font-size:16px;cursor:pointer}#helpb .hb{display:flex;gap:8px;justify-content:center;margin-top:10px}#helpb button{font-size:12px;padding:8px 12px;min-height:0}
+.th-halloween #helpb{background:linear-gradient(#3a2350,#24142f);color:#ffe9c8;box-shadow:0 0 0 3px #ff8a1f,0 8px 0 #0a0510}</style>
+<div id="tip"><svg viewBox="0 0 200 250"><path d="M38 238q10-90 30-110h66q20 20 28 110z" fill="#5d7391" stroke="#1d2433" stroke-width="6"/><circle cx="100" cy="100" r="34" fill="#f2c9a0" stroke="#1d2433" stroke-width="6"/><path d="M70 106q4 26 12 44q8 34 18 52q10-18 18-52q8-18 12-44q-10 14-30 14q-20 0-30-14z" fill="#eef2f6" stroke="#1d2433" stroke-width="6"/><circle cx="88" cy="96" r="4" fill="#1d2433"/><circle cx="112" cy="96" r="4" fill="#1d2433"/><path d="M58 76q42-12 84 0q-6 10-42 10t-42-10z" fill="#4a5f80" stroke="#1d2433" stroke-width="6"/><path d="M70 74q14-40 30-66q6 16 18 30q4 18 12 34q-30 8-60 2z" fill="#5d7391" stroke="#1d2433" stroke-width="6"/></svg><div id="tipb"></div></div>
+<button id="vthelp" type="button" aria-label="Ayuda">?</button>
+<div id="help"><div id="helpb"></div></div>
+<script>/* consejos contextuales + ayuda (valores reales del código) */
+(function(){const W=()=>(window.THEME&&THEME.cur()==='halloween')?{land:'calles embrujadas',biz:'negocios tétricos',cot:'casitas',tower:'torre',jail:'Jaula Huesos',lot:'Gato Adivino',card:'Hechizo',coin:'Caramelos',gift:'Saco Dulces',mg:'casillas de calabaza 🎃'}:{land:'tierras',biz:'negocios (tabernas, molinos, puertos, torres)',cot:'cabañas',tower:'torre',jail:'Mazmorra',lot:'Oráculo',card:'Pergamino',coin:'Tesoro',gift:'Cofre',mg:'casillas mágicas moradas'};
+const TX={
+bar:w=>['La barra de abajo','Ahí ves tu oro 💰 de la partida y tus fichas 🎟. Toca la barra para abrir tu panel.'],
+tokens:w=>['Las fichas 🎟','Ganas fichas al pasar por SALIDA (+1), en el '+w.gift+' y el '+w.lot+' (+1), ganando pruebas (+2) o viendo anuncios. Sirven para no pagar alquiler o comprar sin oro suficiente.'],
+lobby:w=>['Las salas','Únete a la Sala del Pueblo o crea la tuya (2 a 4 jugadores). La partida empieza al llenarse o cuando el anfitrión pulse EMPEZAR.'],
+dado:w=>['¡Tu turno!','Pulsa TIRAR para lanzar el dado de 12 caras. Al pasar por SALIDA ganas 200 de oro y 1 🎟.'],
+compra:w=>['Comprar','Puedes comprar estas '+w.land+'. Si otro jugador cae aquí, te paga alquiler: 25% del precio en '+w.land+' y 50% en '+w.biz+'.'],
+casa:w=>['Construir','En lo tuyo puedes construir '+w.cot+' por la mitad del precio. Hasta 3 '+w.cot+' y luego una '+w.tower+': el alquiler sube x2, x3, x4 y x6.'],
+mgcas:w=>['Pruebas mágicas','Las '+w.mg+' son minijuegos. Si ganas: +200 de oro y +2 🎟. Si pierdes: -100.'],
+anuncio:w=>['Anuncios con premio','Los botones de anuncio te dan ayudas (una 🎟, repetir o premio x2). Solo cuenta si ves el anuncio entero. Máximo 15 al día.'],
+carta:w=>['El '+w.card,'Saca una carta al azar: puede darte oro, fichas, hacerte avanzar o retarte a una prueba.'],
+especial:w=>['Casillas especiales',w.coin+': +100 de oro. '+w.gift+': +1 🎟 y 50–199 de oro. '+w.lot+': +1 🎟 y 30% de ganar 300 (si no, -50). '+w.jail+': multa de 50.']};
+const KEY=id=>'vt_tip_'+id,off=()=>localStorage.getItem('vt_tips_off')==='1';let q=Promise.resolve();
+window.TIP=function(id){if(off()||localStorage.getItem(KEY(id))||!TX[id])return Promise.resolve();localStorage.setItem(KEY(id),'1');
+return q=q.then(()=>new Promise(r=>{const w=W(),[h,t]=TX[id](w),T=document.getElementById('tip'),B=document.getElementById('tipb');B.innerHTML='<b>'+h+'</b>'+t+'<div class="tb"><button class="no" type="button">No mostrar más</button><button type="button">Entendido</button></div>';T.style.display='flex';
+const done=()=>{T.style.display='none';r()};B.querySelectorAll('button')[1].onclick=done;B.querySelector('.no').onclick=()=>{localStorage.setItem('vt_tips_off','1');done()}}))};
+function help(){const w=W(),S=[['🎯 Objetivo','Recorre el tablero, compra '+w.land+' y '+w.biz+', y cobra alquiler. Si alguien se queda sin oro (menos de 0), queda fuera. ¡El último en pie gana! Todos empiezan con 1500 de oro.'],
+['🎲 Turno','Pulsa TIRAR (dado de 12 caras) y avanza. Pasar por SALIDA: +200 de oro y +1 🎟.'],
+['🏡 Comprar y construir',TX.compra(w)[1]+' '+TX.casa(w)[1]],['✨ Pruebas',TX.mgcas(w)[1]],['📜 Casillas especiales',TX.especial(w)[1]+' '+TX.carta(w)[1]],
+['🎟 Fichas',TX.tokens(w)[1]],['📺 Anuncios',TX.anuncio(w)[1]],['👥 Salas y chat','Crea o únete a una sala de 2 a 4 jugadores. El chat solo aparece dentro de una sala.'],['⚙️ Ajustes','Con el botón 🔊 cambias el volumen, silencias y eliges el tema (Reino o Halloween).']];
+const H=document.getElementById('helpb');H.innerHTML='<h2>Cómo se juega</h2>'+S.map(([a,b])=>'<details><summary>'+a+'</summary><p>'+b+'</p></details>').join('')+'<div class="hb"><button id="hrs" type="button">Reiniciar consejos</button><button id="hcl" type="button">Cerrar</button></div>';
+const P=document.getElementById('help');P.style.display='flex';document.getElementById('hcl').onclick=()=>P.style.display='none';P.onclick=e=>{if(e.target===P)P.style.display='none'};
+document.getElementById('hrs').onclick=()=>{Object.keys(localStorage).filter(k=>k.startsWith('vt_tip_')||k==='vt_tips_off').forEach(k=>localStorage.removeItem(k));document.getElementById('hrs').textContent='✅ Reiniciados'}}
+document.getElementById('vthelp').onclick=help;
+const oe=window.enterBoard;if(oe)window.enterBoard=function(){oe.apply(this,arguments);setTimeout(()=>{TIP('bar');TIP('tokens')},900)};
+setInterval(()=>{try{if(getComputedStyle(document.getElementById('lobby')).display!=='none'&&document.getElementById('lbList'))TIP('lobby');if(window.ROOM&&ROOM.myTurn&&ROOM.myTurn())TIP('dado')}catch(e){}},1500)})();</script>
 </body></html>
