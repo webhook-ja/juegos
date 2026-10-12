@@ -343,7 +343,14 @@ try{ROOM.enter()}catch(e){}if(!window._inapp){window._inapp=1;try{ADS.inApp()}ca
 #panb h2{margin:4px 0 8px;font:22px "Arial Black",sans-serif}#panb h3{margin:12px 0 6px;font:16px "Arial Black",sans-serif;color:#ffd23f}
 #panb .row{display:flex;justify-content:space-between;gap:8px;background:#262838;border-radius:10px;padding:6px 10px;margin:4px 0;font-size:13px}
 #panb .st{display:flex;gap:8px}#panb .st div{flex:1;background:#14204a;border-radius:12px;padding:8px;text-align:center;font-size:12px}#panb .st b{display:block;font-size:22px;color:#ffd23f}
-#panb button{font-size:15px;padding:8px 16px;min-height:40px}</style>
+#panb button{font-size:15px;padding:8px 16px;min-height:40px}#panb .phd{display:flex;gap:12px;align-items:center;margin-bottom:8px}#panb .phd h2{margin:0}.pring{position:relative;width:86px;height:86px;flex:0 0 86px}.pring svg{position:absolute;inset:0}
+.pring img,.pring span{position:absolute;left:11px;top:11px;width:64px;height:64px;border-radius:50%;background:#fff;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:28px;color:#2a1a0e}
+.pring .plv{position:absolute;right:-2px;bottom:-2px;background:#f3c33b;color:#2a1a0e;border:3px solid #2a1a0e;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.pxp{font:13px Georgia,serif;margin:2px 0 6px}#panb .st{margin:6px 0}#panb .st div{font-size:11px}
+#panb .ach{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}#panb .ach div{background:rgba(0,0,0,.25);border-radius:14px;padding:6px;text-align:center;filter:grayscale(1);opacity:.5}#panb .ach div.on{filter:none;opacity:1;background:linear-gradient(#ffe8a0,#e0b040);color:#2a1a0e}
+#panb .ach i{display:block;font-style:normal;font-size:24px}#panb .ach b{display:block;font-size:11px}#panb .ach small{display:block;font:9px Arial}
+#panb .htabs,#panb .hpg{display:flex;gap:6px;justify-content:center;align-items:center;margin:6px 0}#panb .htabs button,#panb .hpg button{font-size:12px;padding:6px 10px;min-height:0}#panb .htabs button.on{background:#f3c33b;color:#2a1a0e}
+</style>
 <div id="pan" onclick="if(event.target===this)this.style.display='none'"><div id="panb"></div></div>
 <script>/* panel de usuario, historial y referidos */
 (function(){const BOT_USERNAME='TableroPueblo_bot',API='https://nlkltjywdupkqiwctzpr.supabase.co/functions/v1/referrals';
@@ -358,17 +365,34 @@ let lm=money[0],lt=tok[0];new MutationObserver(()=>{const dm=money[0]-lm,dt=tok[
 // historial de minijuegos
 const orig=MG.play;MG.play=async function(name,p,tk){const r=await orig.apply(this,arguments);const g=L('vt_games');g.push({d:Date.now(),who:PN(p),opp:window.MGOPP!=null?PN(MGOPP):'-',mg:name,w:!!r.w});S('vt_games',g);
 if(!p&&r.w)api({action:'report',points:r.dbl?400:200});return r};
-window.openPanel=function(){const g=L('vt_games'),h=L('vt_hist'),mine=g.filter(x=>x.who=='Tú'),W=mine.filter(x=>x.w).length;const B=document.getElementById('panb');
-const link='https://t.me/'+BOT_USERNAME+'?startapp=ref_'+(user.id||'');
-B.innerHTML='<h2>👤 '+esc(user.first_name||'Jugador')+'</h2><button id="avopen" type="button">🎨 Editar personaje</button><div class="st"><div><b>'+W+'</b>Victorias</div><div><b>'+(mine.length-W)+'</b>Derrotas</div><div><b id="rc">–</b>Referidos</div><div><b id="re">–</b>Premio ref.</div></div>'+
+window.openPanel=function(){const g=L('vt_games'),h=L('vt_hist'),X=window.VTLVL?VTLVL():{xp:0,lvl:1,cur:0,need:40,mw:0,ml:0,pvp:0,pw:0};const B=document.getElementById('panb');
+const link='https://t.me/'+BOT_USERNAME+'?startapp=ref_'+(user.id||''),pc=Math.max(0,Math.min(1,X.cur/X.need)),R=34,C=2*Math.PI*R;
+const coins=+localStorage.getItem('vt_coins')||0,toks=+localStorage.getItem('vt_tokens')||0;
+const ACH=[['🪄','Primera prueba','Gana 1 prueba mágica',X.mw>=1],['📚','Aprendiz','Gana 10 pruebas',X.mw>=10],['🧙','Archimago','Gana 30 pruebas',X.mw>=30],['🎲','A la mesa','Juega 1 partida en sala',X.pvp>=1],
+['👑','Conquistador','Gana 1 partida en sala',X.pw>=1],['🛡️','Veterano','Juega 10 partidas en sala',X.pvp>=10],['⭐','Nivel 5','Llega al nivel 5',X.lvl>=5],['💰','Tesorero','Junta 500 monedas totales',coins>=500],
+['🎩','El secreto','Descubre el secreto del mago',!!localStorage.getItem('vt_egg')],['🎨','Con estilo','Guarda tu personaje',!!localStorage.getItem('vt_avatar')],['🤝','Buen amigo','Invita a 1 amigo',false,'ref1'],['🔥','Constante','Racha de 3 días en tareas',(+localStorage.getItem('vt_streak')||0)>=3]];
+const avs=(window.AV&&AV.mine())||'';
+B.innerHTML='<div class="phd"><div class="pring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="'+R+'" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="8"/><circle cx="40" cy="40" r="'+R+'" fill="none" stroke="#f3c33b" stroke-width="8" stroke-linecap="round" stroke-dasharray="'+(C*pc)+' '+C+'" transform="rotate(-90 40 40)"/></svg>'+(avs?'<img src="'+avs+'">':'<span>'+esc((user.first_name||'J')[0])+'</span>')+'<b class="plv">'+X.lvl+'</b></div>'+
+'<div><h2>'+esc(user.first_name||'Jugador')+'</h2><div class="pxp">Nivel '+X.lvl+' · '+X.cur+'/'+X.need+' XP</div><button id="avopen" type="button">🎨 Editar personaje</button></div></div>'+
+'<div class="st"><div><b>'+X.mw+'</b>Pruebas ganadas</div><div><b>'+X.ml+'</b>Perdidas</div><div><b>'+X.pvp+'</b>Partidas sala</div><div><b>'+X.pw+'</b>Victorias sala</div></div>'+
+'<div class="st"><div><b>'+coins+'</b>🪙 Monedas</div><div><b>'+toks+'</b>🎟 Fichas</div><div><b id="rc">–</b>Referidos</div><div><b id="re">–</b>Premio ref.</div></div>'+
+'<div id="pdaily"></div>'+
+'<h3>🏆 Logros ('+ACH.filter(a=>a[3]).length+'/'+ACH.length+')</h3><div class="ach">'+ACH.map(a=>'<div class="'+(a[3]?'on':'')+'" '+(a[4]?'data-a="'+a[4]+'"':'')+' title="'+esc(a[2])+'"><i>'+a[0]+'</i><b>'+esc(a[1])+'</b><small>'+esc(a[2])+'</small></div>').join('')+'</div>'+
 '<h3>🤝 Invitar amigos</h3>'+(user.id?'<div class="row" style="word-break:break-all">'+esc(link)+'</div><button id="inv">📨 INVITAR</button> <button id="cp">📋 COPIAR</button><div style="font-size:12px;margin-top:4px">Ganas el 10% de los puntos que consigan tus invitados.</div>':'<div class="row">Abre el juego desde Telegram para invitar amigos.</div>')+
-'<h3>🎮 Historial de minijuegos</h3>'+(g.slice(-30).reverse().map(x=>'<div class="row"><span>'+(x.w?'✅':'❌')+' '+esc(x.who)+' vs '+esc(x.opp)+' · '+esc(x.mg)+'</span><span>'+new Date(x.d).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>').join('')||'<div class="row">Sin partidas todavía</div>')+
-'<h3>💰 Historial de puntos</h3>'+(h.slice(-40).reverse().map(x=>'<div class="row"><span>'+(x.m?(x.m>0?'+':'')+x.m+'💰 ':'')+(x.t?(x.t>0?'+':'')+x.t+'🎟':'')+'</span><span style="text-align:right;font-weight:normal">'+esc(x.r).slice(0,80)+'</span></div>').join('')||'<div class="row">Sin movimientos todavía</div>')+
+'<h3>📜 Historial</h3><div class="htabs"><button data-h="g" class="on">🎮 Pruebas</button><button data-h="p">💰 Puntos</button></div><div id="hlist"></div><div class="hpg"></div>'+
 '<div style="text-align:center;margin-top:10px"><button onclick="document.getElementById(\'pan\').style.display=\'none\'">CERRAR</button></div>';
 document.getElementById('pan').style.display='flex';const ao=document.getElementById('avopen');if(ao)ao.onclick=()=>{document.getElementById('pan').style.display='none';AV.open()};
+const fd=d=>new Date(d).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const RG=x=>'<div class="row"><span>'+(x.w?'✅':'❌')+' '+esc(x.who)+' vs '+esc(x.opp)+' · '+esc(x.mg)+'</span><span>'+fd(x.d)+'</span></div>',RP=x=>'<div class="row"><span>'+(x.m?(x.m>0?'+':'')+x.m+'💰 ':'')+(x.t?(x.t>0?'+':'')+x.t+'🎟':'')+'</span><span style="text-align:right;font-weight:normal">'+esc(x.r).slice(0,70)+'</span></div>';
+let ht='g',pg=0;function hist(){const arr=(ht==='g'?g:h).slice(-50).reverse(),n=Math.max(1,Math.ceil(arr.length/10));pg=Math.min(pg,n-1);
+document.getElementById('hlist').innerHTML=arr.slice(pg*10,pg*10+10).map(ht==='g'?RG:RP).join('')||'<div class="row">Sin movimientos todavía</div>';
+document.querySelector('#panb .hpg').innerHTML=n>1?'<button data-p="-1" '+(pg?'':'disabled')+'>◀</button> <span>'+(pg+1)+'/'+n+'</span> <button data-p="1" '+(pg<n-1?'':'disabled')+'>▶</button>':'';
+document.querySelectorAll('#panb .hpg button').forEach(b=>b.onclick=()=>{pg+=+b.dataset.p;hist()})}
+document.querySelectorAll('#panb .htabs button').forEach(b=>b.onclick=()=>{ht=b.dataset.h;pg=0;document.querySelectorAll('#panb .htabs button').forEach(x=>x.classList.toggle('on',x===b));hist()});hist();
+try{window.DAILY&&DAILY.render(document.getElementById('pdaily'))}catch(e){}
 const inv=document.getElementById('inv');if(inv)inv.onclick=()=>{const u='https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent('¡Juega conmigo a Vending Town!');try{tg.openTelegramLink(u)}catch(e){}};
 const cp=document.getElementById('cp');if(cp)cp.onclick=()=>{try{navigator.clipboard.writeText(link);cp.textContent='✅ COPIADO'}catch(e){}};
-api({action:'stats'}).then(r=>{if(r&&r.ok){rc.textContent=r.referrals;re.textContent=r.earned}})};
+api({action:'stats'}).then(r=>{if(r&&r.ok){rc.textContent=r.referrals;re.textContent=r.earned;if(r.referrals>=1){const a=document.querySelector('#panb .ach [data-a=ref1]');if(a)a.classList.add('on')}}})};
 document.getElementById('vtbar').addEventListener('click',openPanel)})();</script>
 <style>#d3{position:fixed;inset:0;z-index:85;display:none;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(20,24,50,.35),rgba(10,12,30,.7));pointer-events:none}#d3 canvas{width:100vw;height:min(70vh,560px)}</style>
 <div id="d3"></div>
