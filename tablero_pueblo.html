@@ -67,7 +67,7 @@ body{min-height:var(--vh,100vh);align-items:flex-start;padding-top:52px}
 </div></div></div>
 <div id="mg"><div id="mgb"><div id="mgt"></div><div id="mgi"></div><div id="mga"></div><div id="mgr"></div></div></div>
 <div class="tok" id="t0"></div><div class="tok" id="t1"></div><div class="tok" id="t2" style="display:none"></div><div class="tok" id="t3" style="display:none"></div>
-<script src='minijuegos_party.js?v=20261012m'></script>
+<script src='minijuegos_party.js?v=20261012t'></script>
 <script>
 const HMUL=[1,2,3,4,6],houses={};
 const _S=(b)=>'<svg viewBox="0 0 64 64" width="38" height="38" style="filter:drop-shadow(0 3px 0 rgba(0,0,0,.25))">'+b+'</svg>';
@@ -262,9 +262,12 @@ dice.onclick=()=>go.click();onresize=()=>{for(let i=0;i<money.length;i++)place(i
 (function(){var tg=window.Telegram&&Telegram.WebApp;try{tg&&tg.expand()}catch(e){}
 try{if(tg&&tg.BackButton){tg.BackButton.onClick(function(){if(window.ROOM&&ROOM.back&&ROOM.back())return;showSplash()})}}catch(e){}
 var b=document.getElementById('board'),w=document.getElementById('wrap');
-function fit(){var vh=(tg&&tg.viewportStableHeight)||innerHeight;document.documentElement.style.setProperty('--vh',vh+'px');
-b.style.transform='none';var bw=b.offsetWidth,bh=b.offsetHeight;var s=Math.min((document.documentElement.clientWidth-8)/bw*.95,(vh-112)/bh,1.4);
-b.style.transform='perspective(1600px) rotateX(9deg) scale('+s+')';w.style.width=bw*s+'px';w.style.height=bh*s+'px';try{place(0);place(1)}catch(e){}}
+function ins(){var t=0,bt=0;try{var a=tg.safeAreaInset||{},q=tg.contentSafeAreaInset||{};t=(a.top||0)+(q.top||0);bt=(a.bottom||0)+(q.bottom||0)}catch(e){}
+var r=document.documentElement.style;r.setProperty('--sat',t+'px');r.setProperty('--sab',bt+'px');var e=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--envt'))||0;return{t:Math.max(t,e),b:bt}}
+function fit(){var vh=(tg&&(tg.viewportStableHeight||tg.viewportHeight))||innerHeight;if(!vh||vh<200)vh=innerHeight;document.documentElement.style.setProperty('--vh',vh+'px');var I=ins();
+b.style.transform='none';var bw=b.offsetWidth,bh=b.offsetHeight;var top=I.t+60,bot=I.b+70,av=Math.max(200,vh-top-bot);var s=Math.min((document.documentElement.clientWidth-10)/bw*.92,av/(bh*1.02),1.8);
+b.style.transform='perspective(1600px) rotateX(9deg) scale('+s+')';w.style.width=bw*s+'px';w.style.height=bh*s+'px';var vis=bh*s*1.02;w.style.marginTop=Math.max(0,(av-vis)/2)+'px';try{place(0);place(1)}catch(e){}}
+try{tg&&tg.onEvent('safeAreaChanged',fit);tg&&tg.onEvent('contentSafeAreaChanged',fit)}catch(e){}
 addEventListener('resize',fit);try{tg&&tg.onEvent('viewportChanged',fit)}catch(e){}fit();setTimeout(fit,120);
 0})();</script>
 <style>#luck{position:fixed;inset:0;background:rgba(10,12,30,.7);display:none;align-items:center;justify-content:center;z-index:80;perspective:900px}
@@ -335,7 +338,7 @@ document.addEventListener('DOMContentLoaded',()=>{const m=document.getElementByI
 if(n===20){m.classList.add('egg');snd(523,.5);setTimeout(()=>snd(784,.6),200);confetti();if(!localStorage.getItem('vt_egg')){localStorage.setItem('vt_egg','1');localStorage.setItem('vt_coins',String((+localStorage.getItem('vt_coins')||0)+100));say('🎩 ¡Secreto descubierto! +100 de oro');try{window.dispatchEvent(new Event('storage'));window.updBar&&updBar()}catch(_){}}else say('🎩 ¡Ya conoces mi secreto!');setTimeout(()=>m.classList.remove('egg'),1300);n=0}
 else if(n>=15)say('¡'+(20-n)+' más y verás!');else if(window.WZC&&WZC.hit(n,say))0;else say(P[Math.floor(Math.random()*P.length)])})})})();
 function showSplash(){document.getElementById('splash').style.display='flex';try{Telegram.WebApp.BackButton.hide()}catch(e){}}
-function enterBoard(){if(window.WZC&&WZC.block())return;if(window.LORE&&LORE.first()&&!window.__skipWZC){LORE.play(enterBoard);return}document.getElementById('splash').style.display='none';try{Telegram.WebApp.BackButton.show()}catch(e){}
+function enterBoard(){if(window.WZC&&WZC.block())return;if(!window.__skipWZC){if(window.TUTO&&TUTO.first()){TUTO.play(enterBoard);return}if(window.LORE&&LORE.first()){LORE.play(enterBoard);return}}document.getElementById('splash').style.display='none';try{Telegram.WebApp.BackButton.show()}catch(e){}
 try{ROOM.enter()}catch(e){}if(!window._inapp){window._inapp=1;try{ADS.inApp()}catch(e){}}try{dispatchEvent(new Event('resize'))}catch(e){}}</script>
 <style>#vtbar{pointer-events:auto!important;cursor:pointer}
 #pan{position:fixed;inset:0;z-index:10000;background:rgba(10,12,30,.75);display:none;align-items:center;justify-content:center}
@@ -575,8 +578,8 @@ function lobbyHome(err){try{THEME.room(null)}catch(e){}try{VT_CHAT.setRoom(null)
 '<button id="lbSolo" class="sec">🧭 JUGAR SOLO (20 rondas · meta 3000 🪙)</button><div id="lbList" class="rl"><p>Cargando…</p></div><div class="row seats">Jugadores: '+[1,2,3,4].map(n=>'<button class="sb'+(n===seatsSel?' on':'')+'" data-n="'+n+'">'+n+'</button>').join('')+'</div>'+
 '<div class="row seats">Mínimo para empezar: '+[2,3,4].map(n=>'<button class="mb'+(n===minSel?' on':'')+'" data-n="'+n+'">'+n+'</button>').join('')+'</div><button id="lbNew">➕ CREAR SALA</button><div class="row"><input id="lbCode" maxlength="6" placeholder="CÓDIGO" autocapitalize="characters"><button id="lbJoin">ENTRAR</button></div></div>';
 const selM=()=>{const mr=ov.querySelector('.mb')&&ov.querySelector('.mb').parentNode;if(mr)mr.style.display=seatsSel===1?'none':'';if(seatsSel>1&&minSel>seatsSel)minSel=seatsSel;ov.querySelectorAll('.mb').forEach(x=>{x.classList.toggle('on',+x.dataset.n===minSel);x.disabled=+x.dataset.n>seatsSel})};ov.querySelectorAll('.sb').forEach(b=>b.onclick=()=>{seatsSel=+b.dataset.n;ov.querySelectorAll('.sb').forEach(x=>x.classList.toggle('on',x===b));selM()});ov.querySelectorAll('.mb').forEach(b=>b.onclick=()=>{minSel=+b.dataset.n;selM()});selM();
-$('lbSolo').onclick=async()=>{const r=await api({action:'create',seats:1,theme:window.THEME?THEME.pref():'fantasia'});if(r.code)join(r.code);else lobbyHome(r.error||'Error')};
-$('lbNew').onclick=async()=>{const r=await api({action:'create',seats:seatsSel,min:minSel,theme:window.THEME?THEME.pref():'fantasia'});if(r.code)join(r.code);else lobbyHome(r.error||'Error')};
+$('lbSolo').onclick=async()=>{const r=await api({action:'create',seats:1,theme:window.THEME?THEME.pref():'fantasia',token:localStorage.getItem('vt_token')||''});if(r.code)join(r.code);else lobbyHome(r.error||'Error')};
+$('lbNew').onclick=async()=>{const r=await api({action:'create',seats:seatsSel,min:minSel,theme:window.THEME?THEME.pref():'fantasia',token:localStorage.getItem('vt_token')||''});if(r.code)join(r.code);else lobbyHome(r.error||'Error')};
 $('lbJoin').onclick=()=>{const c=$('lbCode').value.trim().toUpperCase();if(/^[A-Z0-9]{5,6}$/.test(c))join(c);else lobbyHome('Código de 5 caracteres')};
 loadList();try{if(!sb&&window.supabase)sb=supabase.createClient(SURL,KEY);if(sb&&!lch){let db=0;lch=sb.channel('vt_rooms_list').on('postgres_changes',{event:'*',schema:'public',table:'game_rooms'},()=>{clearTimeout(db);db=setTimeout(()=>{if($('lbList'))loadList()},400)}).subscribe()}}catch(e){}clearInterval(listT);listT=setInterval(()=>{if(ov.style.display!=='none'&&$('lbList'))loadList();else clearInterval(listT)},5000)}
 function lobbyWait(){const link='https://t.me/'+BOT_USERNAME+'?startapp=room_'+code;ov.style.display='flex';
@@ -585,14 +588,16 @@ ov.innerHTML='<div class="lb"><h2>Sala <span class="code">'+esc(code)+'</span></
 $('lbInv').onclick=()=>{const t='https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent('¡Únete a mi partida de Vending Town! Sala '+code);try{tg.openTelegramLink(t)}catch(e){try{window.open(t,'_blank')}catch(_){}}};
 $('lbCp').onclick=()=>{try{navigator.clipboard.writeText(link);$('lbCp').textContent='✅ COPIADO'}catch(e){}};
 const bn=$('lbNow'),bw=$('lbWt');if(bn)bn.onclick=async()=>{bn.disabled=true;const r=await api({action:'start',code});if(r.error){bn.disabled=false;alert(r.error)}};if(bw)bw.onclick=async()=>{bw.disabled=true;await api({action:'wait',code})};const g=$('lbGo');if(g)g.onclick=async()=>{g.disabled=true;const r=await api({action:'start',code});if(r.error){g.disabled=false;alert(r.error)}};
-$('lbOut').onclick=async()=>{await api({action:'leave',code});localStorage.removeItem('vt_room');location.reload()}}
+$('lbOut').onclick=async()=>{await api({action:'leave',code});localStorage.removeItem('vt_room');location.reload()};
+try{const lb=ov.querySelector('.lb'),mine=(row.players[mySeat]||{}).token,tk=row.players.filter((p,i)=>i!==mySeat).map(p=>p.token),d=document.createElement('div');d.innerHTML='<small>Tu ficha:</small><div id="lbtk">'+TOKS.ids.map(i=>'<button type="button" title="'+TOKS.name(i)+'" data-i="'+i+'" class="sb'+(i===mine?' on':'')+'"'+(tk.includes(i)?' disabled':'')+'>'+TOKS.svg(i)+'</button>').join('')+'</div>';$('lbOut').parentNode.insertBefore(d,$('lbOut'));
+d.querySelectorAll('button').forEach(b=>b.onclick=async()=>{const r=await api({action:'token',code,token:b.dataset.i});if(r.ok){localStorage.setItem('vt_token',b.dataset.i);(row.players[mySeat]||{}).token=b.dataset.i;d.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b))}})}catch(e){}}
 // ---------- estado ----------
 function labels(){els.forEach((el,i)=>{const sm=el.querySelector('small');if(!sm)return;if(sm.dataset.o==null)sm.dataset.o=sm.innerHTML;sm.innerHTML=sm.dataset.o+(own[i]!=null?'<br>'+esc(PN(own[i])):'');for(let k=0;k<4;k++)el.classList.toggle('own'+k,own[i]===k)})}
 function applyArrays(st){const lm=[],lt=[],lp=[];for(let i=0;i<S;i++){const g=G(i);lm.push(st.money[g]??1500);lt.push(st.tok[g]??0);lp.push(st.pos[g]??0)}
 money.length=0;money.push(...lm);tok.length=0;tok.push(...lt);pos.length=0;pos.push(...lp);
 Object.keys(own).forEach(k=>delete own[k]);Object.entries(st.own||{}).forEach(([k,v])=>own[k]=L(+v));
 Object.keys(houses).forEach(k=>delete houses[k]);Object.entries(st.houses||{}).forEach(([k,v])=>houses[k]=+v);els.forEach((_,i)=>drawHouses(i));labels()}
-function players(){const P=$('plist');if(!P)return;P.innerHTML='';for(let i=0;i<S;i++){const g=G(i),p=row.players[g],d=document.createElement('div');d.className='pc'+(row.turn===g?' on':'');d.style.borderColor=COLS[g];
+function players(){try{const D=TOKS.ids,used=[];const L=[];for(let i=0;i<S;i++){const p=row.players[G(i)]||{};let t=p.token;if(!D.includes(t)||used.includes(t))t=D.find(x=>!used.includes(x));used.push(t);L.push(t)}TOKAPPLY(L)}catch(e){}const P=$('plist');if(!P)return;P.innerHTML='';for(let i=0;i<S;i++){const g=G(i),p=row.players[g],d=document.createElement('div');d.className='pc'+(row.turn===g?' on':'');d.style.borderColor=COLS[g];
 d.innerHTML='<b class="vfig" data-c="'+COLS[g]+'" data-f="'+(i?'🙂':'😎')+'"'+(((window.AV&&AV.get(p.id))||p.avatar)?' data-ph="'+esc((window.AV&&AV.get(p.id))||p.avatar)+'"':'')+'></b><div class="pn">'+(online[p.id]?'🟢 ':'⚪ ')+esc(i?p.name:'Tú')+'</div><div class="pm">💰<span id="m'+i+'">'+money[i]+'</span> 🎟<span id="k'+i+'">'+tok[i]+'</span></div><div class="ps">'+T[pos[i]][1]+' '+esc(T[pos[i]][2])+'</div>';
 if(i&&window.VT_CHAT)d.onclick=()=>VT_CHAT.openTo(+p.id);P.appendChild(d);vfig(d.querySelector('.vfig'))}
 for(let k=0;k<4;k++){const t=$('t'+k);if(!t)continue;t.style.display=k<S?'':'none';if(k<S)t.style.background=COLS[G(k)]}
@@ -628,7 +633,7 @@ function remoteMG(p){if(p.b!==mySeat)return;const a=row.players[p.a];const mg=$(
 $('mgt').textContent='⚔ Duelo contra '+a.name;$('mgi').textContent='¡Te ha retado! Juega a la vez.';$('mgr').textContent='';ar.innerHTML='';mg.style.display='flex';
 mgCleanup=PartyMG.mount(p.id,ar,w=>{$('mgr').textContent=w?'¡Has ganado tu parte! 🏆':'Has perdido 😵';if(!w)try{SCARE.lost()}catch(e){};setTimeout(()=>{if(mgCleanup){try{mgCleanup()}catch(e){}mgCleanup=null}mg.style.display='none'},1800)},false,{seed:p.seed,playerName:myName,avatarUrl:myAv,opponent:{name:a.name,avatarUrl:a.avatar,remote:true,send:ev=>chan&&chan.send({type:'broadcast',event:'tap',payload:{from:mySeat,ev}}),onEvent:cb=>{tapCb=cb}}})}
 // ---------- conexion ----------
-async function join(c){const r=await api({action:'join',code:c,theme:window.THEME?THEME.pref():'fantasia'});if(r.error){localStorage.removeItem('vt_room');lobbyHome(r.error==='room not found'?'Sala no encontrada':r.error);return}
+async function join(c){const r=await api({action:'join',code:c,theme:window.THEME?THEME.pref():'fantasia',token:localStorage.getItem('vt_token')||''});if(r.error){localStorage.removeItem('vt_room');lobbyHome(r.error==='room not found'?'Sala no encontrada':r.error);return}
 code=c;localStorage.setItem('vt_room',c);if(!sb)sb=supabase.createClient(SURL,KEY);
 chan=sb.channel('room:'+c,{config:{presence:{key:String(me)},broadcast:{self:false}}});
 chan.on('postgres_changes',{event:'UPDATE',schema:'public',table:'game_rooms',filter:'code=eq.'+c},p=>onRow(p.new))
@@ -1195,7 +1200,7 @@ block:()=>{if(armed&&!won){open();return true}return false}};
 #lore .sk{position:absolute;right:14px;bottom:14px;z-index:2;font:14px "Arial Black",sans-serif;padding:8px 14px;border:3px solid #2a1a0e;border-radius:12px;background:#ffd76a;color:#2a1a0e;cursor:pointer}
 @media (prefers-reduced-motion:reduce){#lore .sc{animation:none;position:static;padding:10px}#lore .mask{overflow:auto;-webkit-mask:none;mask:none}}
 #splore{margin-top:4px;font:14px 'MedievalSharp',serif;padding:8px 14px;border:3px solid #2a1a0e;border-radius:14px;background:#e9d29a;color:#2a1a0e;cursor:pointer}</style>
-<script>(function(){const P='<p>Escuchad, viajeros, la leyenda de Vending Town.</p><p>Hubo un tiempo en que este reino florecía. Sus campos daban trigo dorado, sus tabernas rebosaban de canciones, y en lo alto de la colina se alzaba la torre del Mago Posadero, guardián de la luz del pueblo.</p><p>Una noche, el Rey subió los mil escalones de la torre. No venía a pedir consejo. Venía a pedir un filtro de amor, para doblegar un corazón que no le pertenecía.</p><p>El Mago lo miró largo rato, y respondió: El amor no se fabrica en un caldero, majestad. Lo que me pedís no es magia. Es una cadena.</p><p>El Rey, herido en su orgullo, lo acusó de herejía ante todo el reino, y envió a sus guardias a arrebatarle la torre.</p><p>Aquella misma noche, el Mago huyó entre la niebla, llevándose consigo la luz.</p><p>Y el reino comenzó a morir. Parcela a parcela. Se secaron los campos, se apagaron las tabernas, y el silencio cubrió las calles.</p><p>Pero dice la profecía que llegarán nuevos viajeros. Que tirarán los dados del destino, comprarán las tierras olvidadas, y devolverán la vida, casa a casa, al viejo pueblo.</p><p>Esos viajeros, sois vosotros.</p>';
+<script>(function(){const P='<p>Escuchad, viajeros.</p><p>El viejo posadero que guarda la entrada fue el Gran Mago del reino.</p><p>El Rey le exigió un filtro de amor para conquistar a la Dama Alba. El Mago se negó: el amor no se fabrica.</p><p>Furioso, el Rey lo acusó de herejía, y el Capitán de la Guardia le arrebató su torre.</p><p>El Mago huyó, y con él la magia. Las casillas del pueblo murieron una a una, y las máquinas del Mercader se apagaron.</p><p>Solo la Herbolaria guardó una semilla de esperanza.</p><p>Hoy llegan forasteros dispuestos a tirar los dados, comprar las tierras con sus monedas y devolver la magia a cada negocio.</p><p>Y ahora, forastero… ¿quién eres tú?</p>';
 const IL='<svg class="il" viewBox="0 0 400 180" preserveAspectRatio="xMidYMid slice"><g stroke="#3a2414" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">'+
 '<path d="M0 150q60-30 120-12t120-8 160 4v50H0z" fill="#b89452"/><path d="M40 150l6-40 14-6 4 46M300 148l4-60 18-10 16 10 2 60" fill="#8a6a3a"/>'+
 '<path d="M180 150V50l20-14 20 14v100" fill="#a8885a"/><path d="M172 54l28-34 28 34z" fill="#6b4424"/><rect x="194" y="70" width="12" height="16" fill="#ffd96a"/>'+
@@ -1204,11 +1209,153 @@ const IL='<svg class="il" viewBox="0 0 400 180" preserveAspectRatio="xMidYMid sl
 let a=null,o=null,done=null;
 function close(){if(!o)return;try{a&&a.pause()}catch(e){}try{MUSIC.duck(false)}catch(e){}o.remove();o=null;localStorage.setItem('vt_lore','1');const d=done;done=null;d&&d()}
 window.LORE={play:cb=>{if(o)return;done=cb;o=document.createElement('div');o.id='lore';o.innerHTML='<div class="pg">'+IL+'<div class="mask"><div class="sc">'+P+'</div></div></div><button class="sk" type="button">Saltar ⏭</button>';document.body.appendChild(o);
-o.querySelector('.sk').onclick=e=>{e.stopPropagation();close()};o.querySelector('.sc').style.animationDuration='84s';
-try{MUSIC.duck(true)}catch(e){}a=new Audio('leyenda.mp3?v=1');a.volume=Math.min(1,(window.VOL??0.7)*1.2);a.muted=!(window.VOL>0);a.onended=()=>setTimeout(close,1500);a.play().catch(()=>{});
-setTimeout(()=>{if(o)close()},90000)},first:()=>!localStorage.getItem('vt_lore')};
+let picked=false;const sc=o.querySelector('.sc');sc.style.animationDuration='40s';
+function part2(){if(!o)return;sc.style.animation='none';sc.style.top='0';sc.style.position='static';sc.innerHTML='<p style="margin-top:40%">Ve, y devuelve la vida al pueblo.</p>';try{a=new Audio('leyenda2.mp3?v=3');a.volume=Math.min(1,(window.VOL??0.7)*1.2);a.muted=!(window.VOL>0);a.onended=()=>setTimeout(close,900);a.play().catch(()=>setTimeout(close,2500))}catch(e){setTimeout(close,2500)}}
+function pick(){if(picked||!o)return;picked=true;try{a&&a.pause()}catch(e){}window.TOKPICK?TOKPICK(part2,{title:'Y ahora, forastero… ¿quién eres tú?'}):part2()}
+o.querySelector('.sk').onclick=e=>{e.stopPropagation();if(!picked)pick();else close()};
+try{MUSIC.duck(true)}catch(e){}a=new Audio('leyenda.mp3?v=3');a.volume=Math.min(1,(window.VOL??0.7)*1.2);a.muted=!(window.VOL>0);a.onended=()=>setTimeout(pick,400);a.play().catch(()=>{});
+setTimeout(pick,42000)},first:()=>!localStorage.getItem('vt_lore')};
 document.addEventListener('visibilitychange',()=>{if(a&&o){document.hidden?a.pause():a.play().catch(()=>{})}});
 const sp=document.getElementById('spgo');if(sp){const b=document.createElement('button');b.id='splore';b.type='button';b.textContent='📜 Leyenda';b.onclick=e=>{e.stopPropagation();LORE.play()};sp.insertAdjacentElement('afterend',b)}
 })();</script>
-<script src="music.js?v=20261012m"></script>
+<!-- ===== Fichas del reparto de la leyenda + picker ===== -->
+<style>
+.tok.tkx{width:34px!important;height:40px!important;background:none!important;border:none!important;border-radius:0!important;box-shadow:none!important}
+.tok.tkx svg{width:100%;height:100%;filter:drop-shadow(0 3px 0 rgba(0,0,0,.45))}
+#tkp{position:fixed;inset:0;z-index:14500;display:flex;align-items:center;justify-content:center;background:rgba(10,6,4,.55)}
+#tkp .bx{width:min(92vw,400px);background:radial-gradient(circle at 30% 20%,#f8ecc8,#e6cf98 60%,#c9a866);color:#2a1a0e;border:4px solid #3a2414;border-radius:18px;padding:14px;text-align:center;font:15px 'MedievalSharp',Georgia,serif;box-shadow:0 0 0 5px #6b4424,0 14px 40px #000}
+#tkp h3{margin:0 0 8px;font:20px 'Cinzel Decorative',Georgia,serif}
+#tkp .g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+#tkp button.tk{min-height:96px;border:3px solid #3a2414;border-radius:14px;background:#f3e3bb;cursor:pointer;padding:4px;font:12px 'MedievalSharp',serif;color:#2a1a0e}
+#tkp button.tk svg{width:54px;height:62px;display:block;margin:0 auto}
+#tkp button.tk.on{background:#ffd76a;outline:3px solid #2a1a0e}#tkp button.tk:disabled{opacity:.35;filter:grayscale(1)}
+#tkp .ok{margin-top:10px;min-height:46px;font:16px "Arial Black",sans-serif;padding:8px 22px;border:3px solid #2a1a0e;border-radius:14px;background:linear-gradient(#ffd76a,#e0a52b);cursor:pointer}
+#lbtk{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}#lbtk button{min-height:44px;width:44px;padding:2px;border-radius:10px;background:#f3e3bb!important;border:2px solid #2a1a0e!important;box-shadow:none!important}#lbtk button.on{background:#ffd76a!important;outline:3px solid #fff}#lbtk button:disabled{opacity:.3}
+#lbtk svg{width:36px;height:40px}
+</style>
+<script>(function(){
+const S='stroke="#2a1a0e" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
+const face=(skin,ex)=>'<ellipse cx="32" cy="40" rx="14" ry="15" fill="'+skin+'" '+S+'/><circle cx="27" cy="39" r="2.2" fill="#2a1a0e"/><circle cx="37" cy="39" r="2.2" fill="#2a1a0e"/>'+(ex||'<path d="M28 47q4 3 8 0" '+S+' fill="none" stroke-width="2"/>');
+const base=c=>'<path d="M14 72q2-16 18-18q16 2 18 18z" fill="'+c+'" '+S+'/>';
+const W=b=>'<svg viewBox="0 0 64 74"><g filter="url(#xmwob)">'+b+'</g></svg>';
+const T={
+mago:['El Mago exiliado',W(base('#5d7391')+face('#f2c9a0','<path d="M20 44q2 18 12 22q10-4 12-22q-6 6-12 6t-12-6z" fill="#eef2f6" '+S+'/>')+'<path d="M14 30q18-6 36 0q-4 5-18 5t-18-5z" fill="#4a5f80" '+S+'/><path d="M20 30q6-18 14-26q2 12 10 26z" fill="#5d7391" '+S+'/><circle cx="34" cy="16" r="2.5" fill="#ffe27a"/><circle cx="38" cy="38" r="5" fill="none" '+S+' stroke-width="2"/>')],
+rey:['El Rey',W(base('#b8323a')+face('#f6cfa8','<path d="M26 49q6-3 12 0" '+S+' fill="none" stroke-width="2"/><path d="M22 45q10 8 20 0" fill="#7a4a22" '+S+' stroke-width="2"/>')+'<path d="M18 30l4-14 6 8 4-10 4 10 6-8 4 14z" fill="#e8c23a" '+S+'/><circle cx="32" cy="22" r="2" fill="#d6303a"/>')],
+dama:['La Dama Alba',W(base('#7ab8e0')+'<path d="M16 48q-2-30 16-30t16 30q-6-10-16-10t-16 10z" fill="#e8c27a" '+S+'/>'+face('#f8dcc0','<path d="M29 47q3 2 6 0" stroke="#d6303a" stroke-width="2.5" fill="none"/>')+'<path d="M24 22l8-6 8 6" fill="none" stroke="#fff" stroke-width="3"/><circle cx="32" cy="16" r="2.5" fill="#bfe6ff" '+S+' stroke-width="1.5"/>')],
+capitan:['El Capitán de la Guardia',W(base('#8a8aa0')+face('#e8b890','<path d="M27 47h10" '+S+' stroke-width="2"/><path d="M24 36l6 1M40 36l-6 1" '+S+' stroke-width="2"/>')+'<path d="M17 36q0-18 15-18t15 18z" fill="#a8b0c0" '+S+'/><path d="M32 18v-8q8 0 10 6" fill="none" stroke="#d6303a" stroke-width="4"/><path d="M30 26v10" '+S+'/>')],
+mercader:['El Mercader de máquinas',W(base('#2f8a4a')+face('#f2c9a0','<path d="M24 45q8 4 16 0" fill="none" '+S+' stroke-width="2"/><path d="M24 44q-6 2-6-2M40 44q6 2 6-2" '+S+' stroke-width="2" fill="none"/>')+'<path d="M18 30h28l-3-10H21z" fill="#6b4424" '+S+'/><path d="M14 31h36" '+S+'/><rect x="44" y="52" width="14" height="18" rx="2" fill="#5fd7ff" '+S+' stroke-width="2"/><circle cx="51" cy="58" r="2" fill="#ffe27a"/>')],
+herbolaria:['La Herbolaria',W(base('#6a8a3a')+'<path d="M16 50q-4-34 16-34t16 34q-6-14-16-14t-16 14z" fill="#5a3a7a" '+S+'/>'+face('#e8c4a0')+'<path d="M44 60q10-14 2-26M46 40q6-2 8 2M45 48q-6-2-6 2" stroke="#2f7a46" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="46" cy="32" r="3" fill="#ff8ad1" '+S+' stroke-width="1.5"/>')]};
+const IDS=Object.keys(T);window.TOKS={ids:IDS,svg:id=>(T[id]||T.mago)[1],name:id=>(T[id]||T.mago)[0],get:()=>{const v=localStorage.getItem('vt_token');return IDS.includes(v)?v:null}};
+/* picker modal */
+window.TOKPICK=(cb,opt)=>{opt=opt||{};const taken=opt.taken||[];let sel=TOKS.get();if(!sel||taken.includes(sel))sel=IDS.find(i=>!taken.includes(i));
+const o=document.createElement('div');o.id='tkp';o.innerHTML='<div class="bx"><h3>'+(opt.title||'Elige tu ficha')+'</h3><div class="g">'+IDS.map(i=>'<button type="button" class="tk'+(i===sel?' on':'')+'" data-i="'+i+'"'+(taken.includes(i)?' disabled':'')+'>'+T[i][1]+T[i][0]+'</button>').join('')+'</div><button type="button" class="ok">Soy yo ✔</button></div>';
+(opt.parent||document.body).appendChild(o);o.querySelectorAll('.tk').forEach(b=>b.onclick=()=>{sel=b.dataset.i;o.querySelectorAll('.tk').forEach(x=>x.classList.toggle('on',x===b))});
+o.querySelector('.ok').onclick=e=>{e.stopPropagation();localStorage.setItem('vt_token',sel);o.remove();cb&&cb(sel)}};
+/* antes de crear partida (solo o sala nueva), pedir ficha */
+let pass=false;document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#lbSolo,#lbNew');if(!b||pass)return;e.stopImmediatePropagation();e.preventDefault();TOKPICK(()=>{pass=true;b.click();pass=false})},true);
+/* fichas en el tablero: cada jugador con la ficha elegida (o asignada) */
+window.TOKAPPLY=(list)=>{list.forEach((id,i)=>{const el=document.getElementById('t'+i);if(!el)return;if(el.dataset.tk!==id){el.dataset.tk=id;el.classList.add('tkx');el.innerHTML=TOKS.svg(id);el.title=TOKS.name(id)}})};
+})();</script>
+<!-- ===== Misión 1: Conoce a tu avatar (tutorial obligatorio la primera vez) ===== -->
+<style>#tuto{position:fixed;inset:0;z-index:14200;background:radial-gradient(circle at 50% 30%,#3b5f96,#14213d 60%,#0a1020);display:flex;flex-direction:column;align-items:center;padding:calc(var(--top,0px) + 14px) 10px calc(var(--bot,0px) + 14px);font:15px 'MedievalSharp',Georgia,serif;color:#ffe9a8}
+.th-halloween #tuto{background:radial-gradient(circle at 50% 30%,#5a2a7a,#2a1440 55%,#120a1c)}.th-navidad #tuto{background:radial-gradient(circle at 50% 30%,#2f6aa0,#173a5e 55%,#0b1e38)}
+#tuto h2{margin:0;font:20px 'Cinzel Decorative',Georgia,serif;color:#f3c33b;text-align:center}
+#tuto .pb{width:min(90vw,380px);height:12px;border:2px solid #2a1a0e;border-radius:8px;background:#2a1a0e;margin:8px 0;overflow:hidden}#tuto .pb i{display:block;height:100%;background:linear-gradient(90deg,#7cf25a,#f3c33b);transition:width .4s}
+#tuto .map{position:relative;flex:1;width:min(94vw,400px);max-height:460px;border:4px solid #2a1a0e;border-radius:20px;background:radial-gradient(circle at 30% 25%,#f3e3bb,#dcc28a);box-shadow:0 8px 0 #2a1a0e;margin:6px 0}
+#tuto .st{position:absolute;transform:translate(-50%,-50%);width:70px;min-height:64px;border:3px solid #2a1a0e;border-radius:16px;background:#e9d29a;color:#2a1a0e;font:11px 'MedievalSharp',serif;text-align:center;padding:4px;cursor:pointer}
+#tuto .st b{display:block;font-size:24px}#tuto .st.nx{background:#ffd76a;animation:pulse 1.2s infinite;box-shadow:0 0 0 4px #fff}#tuto .st.ok{background:#9be060}#tuto .st.ok:after{content:"✔";position:absolute;top:-8px;right:-6px;font-size:16px}
+#tuto .me{position:absolute;width:52px;height:60px;transform:translate(-50%,-80%);transition:left .9s ease-in-out,top .9s ease-in-out;pointer-events:none;z-index:2}#tuto .me img,#tuto .me svg{width:100%;height:100%;object-fit:contain;animation:bob 1s ease-in-out infinite}
+#tuto .path{position:absolute;inset:0;width:100%;height:100%}
+#tuto .tip{width:min(94vw,400px);min-height:92px;display:flex;gap:8px;align-items:flex-start;background:rgba(42,26,14,.92);border:3px solid #f3c33b;border-radius:16px;padding:8px}
+#tuto .tip span{font-size:34px}#tuto .tip button{min-height:44px;margin-top:6px;font:14px "Arial Black",sans-serif;padding:6px 14px;border:3px solid #2a1a0e;border-radius:12px;background:linear-gradient(#ffd76a,#e0a52b);color:#2a1a0e;cursor:pointer}
+#tuto .die{font-size:44px;display:inline-block}#tuto .die.r{animation:spspin .7s}</style>
+<script>(function(){
+const ST=[
+['🏰','Salas',22,18,'Aquí, en las <b>Salas</b>, creas una partida o te unes a la de tus amigos. ¡Toca la siguiente parada para seguir!'],
+['🎲','Tablero',75,22,'Este es el <b>tablero</b>. En tu turno tiras el dado y avanzas. Prueba: ','roll'],
+['✨','Prueba',78,55,'Las casillas mágicas lanzan una <b>prueba</b>. Practica: ¡toca 8 veces en 3 segundos!','tap'],
+['🎨','Avatar',50,72,'En la <b>tienda de avatar</b> (tu foto en la barra de abajo) cambias tu aspecto y desbloqueas prendas.'],
+['📅','Tareas',22,58,'Las <b>tareas diarias</b> te dan fichas 🎟 y experiencia cada día. ¡No rompas la racha!'],
+['🍺','Taberna',30,88,'En la <b>taberna</b> (el chat de la sala) hablas con los demás jugadores. ¡Misión cumplida!']];
+let o=null,i=0,done=[],cb=null;
+const av=()=>{let u=null;try{u=AV.mine()}catch(e){}return u?'<img src="'+u+'" alt="">':(window.TOKS?TOKS.svg(TOKS.get()||'mago'):'🧑')};
+function snd(f){if(!(window.VOL>0))return;try{const C=new (window.AudioContext||window.webkitAudioContext)(),x=C.createOscillator(),g=C.createGain();x.frequency.value=f;g.gain.setValueAtTime(.08,C.currentTime);g.gain.exponentialRampToValueAtTime(.001,C.currentTime+.2);x.connect(g).connect(C.destination);x.start();x.stop(C.currentTime+.2)}catch(e){}}
+function draw(){const m=o.querySelector('.map');m.querySelectorAll('.st').forEach((e,k)=>{e.className='st'+(done.includes(k)?' ok':'')+(k===i?' nx':'')});o.querySelector('.pb i').style.width=(done.length/ST.length*100)+'%'}
+function tip(html,btn,fn){const t=o.querySelector('.tip div');t.innerHTML=html+(btn?'<br><button type="button">'+btn+'</button>':'');if(btn)t.querySelector('button').onclick=fn}
+function go(k){if(k!==i)return;const s=ST[k],me=o.querySelector('.me');me.style.left=s[2]+'%';me.style.top=s[3]+'%';snd(500+k*80);
+setTimeout(()=>{const fin=()=>{done.push(k);i++;draw();snd(880);if(i>=ST.length)tip('🎉 <b>¡Misión 1 completada!</b> Ya conoces el pueblo.','Continuar',close);else tip('¡Bien! Ahora ve a <b>'+ST[i][1]+'</b>.')};
+ if(s[5]==='roll'){tip(s[4]+'<span class="die">🎲</span>','Tirar',()=>{const d=o.querySelector('.die');d.classList.add('r');setTimeout(()=>{d.classList.remove('r');d.textContent=1+Math.floor(Math.random()*12);tip('¡Has sacado un <b>'+d.textContent+'</b>! Así se avanza.','Entendido',fin)},700)})}
+ else if(s[5]==='tap'){let c=0,t0=0,iv;tip(s[4],'👊 0',null);const b=o.querySelector('.tip button');b.onclick=()=>{if(!t0){t0=Date.now();iv=setInterval(()=>{if(Date.now()-t0>3000){clearInterval(iv);if(c<8){c=0;t0=0;b.textContent='👊 Otra vez';tip('¡Casi! Inténtalo otra vez.','👊 0',null);o.querySelector('.tip button').onclick=b.onclick}}},100)}c++;b.textContent='👊 '+c;snd(300+c*40);if(c>=8){clearInterval(iv);tip('¡Prueba superada! 🏆','Entendido',fin)}}}
+ else tip(s[4],'Entendido',fin)},900)}
+function close(){localStorage.setItem('vt_tuto','1');o.remove();o=null;const c=cb;cb=null;c&&c()}
+window.TUTO={first:()=>!localStorage.getItem('vt_tuto'),play:c=>{if(o)return;cb=c;i=0;done=[];o=document.createElement('div');o.id='tuto';
+o.innerHTML='<h2>Misión 1: Conoce a tu avatar</h2><div class="pb"><i style="width:0"></i></div><div class="map"><svg class="path" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M22 18L75 22L78 55L50 72L22 58L30 88" stroke="#8a5a33" stroke-width="1.6" stroke-dasharray="3 2" fill="none"/></svg>'+ST.map((s,k)=>'<div class="st" data-k="'+k+'" style="left:'+s[2]+'%;top:'+s[3]+'%"><b>'+s[0]+'</b>'+s[1]+'</div>').join('')+'<div class="me" style="left:50%;top:40%">'+av()+'</div></div><div class="tip"><span>🧙</span><div></div></div>';
+document.body.appendChild(o);o.querySelectorAll('.st').forEach(e=>e.onclick=()=>go(+e.dataset.k));draw();tip('¡Bienvenido, forastero! Soy el posadero. Toca <b>Salas</b> para que tu avatar camine hasta allí.')}};
+/* "Repetir tutorial" en la ayuda */
+setInterval(()=>{const h=document.getElementById('helpb');if(h&&h.offsetParent&&!document.getElementById('rptuto')){const b=document.createElement('button');b.id='rptuto';b.type='button';b.textContent='🧭 Repetir tutorial';b.style.cssText='min-height:44px;margin-top:8px;font:14px "Arial Black",sans-serif;padding:6px 14px;border:3px solid #2a1a0e;border-radius:12px;background:#ffd76a;color:#2a1a0e;cursor:pointer';b.onclick=()=>{try{document.getElementById('help').style.display='none'}catch(e){}TUTO.play()};h.appendChild(b)}},800);
+})();</script>
+
+<!-- ===== Avatar bailón en el lobby (bailes alquilables) ===== -->
+<style>#lbav{position:fixed;left:8px;bottom:calc(var(--bot,0px) + 66px);z-index:10002;display:none;flex-direction:column;align-items:center;gap:4px;pointer-events:auto}
+#lbav .fig{width:64px;height:74px;transform-origin:50% 100%}#lbav .fig img,#lbav .fig svg{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 0 rgba(0,0,0,.4))}
+#lbav .emo{position:absolute;top:-22px;font-size:22px;opacity:0;transition:opacity .2s}#lbav .emo.on{opacity:1;animation:hop .6s}
+#lbav button{min-height:44px;min-width:44px;font:12px "Arial Black",sans-serif;border:2px solid #2a1a0e;border-radius:12px;background:#ffd76a;color:#2a1a0e;cursor:pointer;padding:2px 6px}
+#dnp{position:fixed;left:8px;bottom:calc(var(--bot,0px) + 150px);z-index:10003;width:min(86vw,300px);background:var(--parch,#f3e3bb);color:#2a1a0e;border:3px solid #2a1a0e;border-radius:14px;padding:8px;font:13px 'MedievalSharp',serif;box-shadow:0 5px 0 #2a1a0e}
+#dnp .r{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:3px 0}#dnp button{min-height:40px;font:12px "Arial Black",sans-serif;border:2px solid #2a1a0e;border-radius:10px;background:#ffd76a;padding:4px 8px;cursor:pointer}#dnp button.on{background:#9be060}
+.dn-idle{animation:dni 2.4s ease-in-out infinite}@keyframes dni{50%{transform:translateY(-3px) scaleY(1.02)}}
+.dn-saludo{animation:dns 1.2s ease-in-out infinite}@keyframes dns{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.dn-balanceo{animation:dnb 1.6s ease-in-out infinite}@keyframes dnb{25%{transform:translateX(-6px) rotate(-6deg)}75%{transform:translateX(6px) rotate(6deg)}}
+.dn-baile{animation:dnd .8s ease-in-out infinite}@keyframes dnd{25%{transform:translateY(-8px) rotate(-10deg) scaleX(1.05)}50%{transform:scaleY(.9)}75%{transform:translateY(-8px) rotate(10deg)}}
+.dn-giro{animation:dng 1.6s ease-in-out infinite}@keyframes dng{60%{transform:rotateY(0)}100%{transform:rotateY(360deg)}}
+.dn-saltitos{animation:dnj .6s cubic-bezier(.3,0,.3,1) infinite}@keyframes dnj{0%,100%{transform:scale(1.08,.9)}50%{transform:translateY(-16px) scale(.95,1.06)}}
+.dn-pose{animation:dnp 2s ease-in-out infinite}@keyframes dnp{0%,100%{transform:none;filter:none}40%,70%{transform:scale(1.12) rotate(-4deg);filter:drop-shadow(0 0 10px #7fe3ff)}}
+.dn-siesta{animation:dnz 3s ease-in-out infinite}@keyframes dnz{50%{transform:rotate(-14deg) translateY(4px) scaleY(.95)}}
+@media (prefers-reduced-motion:reduce){#lbav .fig{animation:none!important}}</style>
+<div id="lbav"><span class="emo">💬</span><div class="fig dn-idle"></div><button type="button" id="dnb">💃 Bailes</button></div>
+<script>(function(){
+const D={idle:['Reposo',0],saludo:['Saludo',50],balanceo:['Balanceo',60],baile:['Baile del pueblo',150],giro:['Giro',80],saltitos:['Saltitos',70],pose:['Pose de mago',120],siesta:['Siesta',50]};
+const CAP=10,EXTRA=30,DAY=864e5;
+const J=()=>{try{return JSON.parse(localStorage.getItem('vt_dance_rent')||'{}')}catch(e){return{}}},SV=o=>localStorage.setItem('vt_dance_rent',JSON.stringify(o));
+const coins=()=>+localStorage.getItem('vt_coins')||0,pay=n=>{if(coins()<n)return false;localStorage.setItem('vt_coins',String(coins()-n));try{window.dispatchEvent(new Event('storage'));window.updBar&&updBar()}catch(e){}return true};
+let cur=localStorage.getItem('vt_dance')||'idle';
+const el=document.getElementById('lbav'),fig=el.querySelector('.fig');
+function ok(id){if(id==='idle')return true;const r=J()[id];return r&&r.until>Date.now()&&r.plays<CAP}
+function set(id){if(!ok(id))id='idle';cur=id;localStorage.setItem('vt_dance',id);fig.className='fig dn-'+id}
+fig.addEventListener('animationiteration',()=>{if(cur==='idle')return;const o=J(),r=o[cur];if(!r)return set('idle');r.plays++;SV(o);if(r.plays>=CAP){const id=cur;set('idle');cap(id)}});
+function cap(id){const n=D[id][1],hasAd=!!(window.ADS&&ADS.reward&&window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData);
+ VTDLG('<h3>💃 '+D[id][0]+'</h3><p>Tu avatar se ha cansado.'+(hasAd?' Mira un anuncio para seguir bailando, o paga '+EXTRA+' monedas.':' Paga '+EXTRA+' monedas para seguir bailando.')+'</p>',[['Ahora no',null,'sec'],...(hasAd?[['📺 Ver anuncio',async()=>{const prev=window.VT_GAME;window.VT_GAME='baile';let v=false;try{v=await ADS.reward('dance')}catch(e){}window.VT_GAME=prev;if(v){const o=J();if(o[id]){o[id].plays=0;SV(o)}set(id)}}]]:[]),['🪙 Pagar '+EXTRA,()=>{if(pay(EXTRA)){const o=J();if(o[id]){o[id].plays=0;SV(o)}set(id)}else VTDLG('<p>No tienes monedas suficientes.</p>',[['Vale']])}]])}
+function picker(){let p=document.getElementById('dnp');if(p){p.remove();return}p=document.createElement('div');p.id='dnp';const o=J();
+ p.innerHTML='<b>💃 Bailes</b> <small>(alquiler 24 h · 🪙 '+coins()+')</small>'+Object.keys(D).map(k=>{const r=o[k],act=k==='idle'||(r&&r.until>Date.now());return '<div class="r"><span>'+D[k][0]+(act&&k!=='idle'?' <small>⏳ '+Math.ceil((r.until-Date.now())/36e5)+' h · '+(CAP-r.plays)+' usos</small>':'')+'</span><button type="button" data-k="'+k+'" class="'+(cur===k?'on':'')+'">'+(act?(cur===k?'Bailando':'Usar'):'🪙 '+D[k][1])+'</button></div>'}).join('');document.body.appendChild(p);
+ p.querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=b.dataset.k,r=J()[k];if(k==='idle'||(r&&r.until>Date.now())){if(r&&r.plays>=CAP){p.remove();return cap(k)}set(k);p.remove();return}
+  VTDLG('<h3>💃 '+D[k][0]+'</h3><p>¿Alquilar este baile 24 horas por <b>'+D[k][1]+'</b> monedas?</p>',[['Cancelar',null,'sec'],['Alquilar',()=>{if(!pay(D[k][1]))return VTDLG('<p>No tienes monedas suficientes.</p>',[['Vale']]);const o=J();o[k]={until:Date.now()+DAY,plays:0};SV(o);set(k)}]])})}
+document.getElementById('dnb').onclick=picker;
+function face(){let u=null;try{u=AV.mine()}catch(e){}const h=u?'<img src="'+u+'" alt="">':(window.TOKS?TOKS.svg(TOKS.get()||'mago'):'');if(fig.dataset.h!==h){fig.dataset.h=h;fig.innerHTML=h}}
+setInterval(()=>{const lb=document.getElementById('lobby');const v=lb&&getComputedStyle(lb).display!=='none';el.style.display=v?'flex':'none';if(!v){const p=document.getElementById('dnp');p&&p.remove()}else face()},700);
+set(cur);
+/* emote al enviar un mensaje */
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#chats')){const m=el.querySelector('.emo');m.textContent=['💬','😄','👋','🎉','😂'][Math.floor(Math.random()*5)];m.classList.remove('on');void m.offsetWidth;m.classList.add('on');setTimeout(()=>m.classList.remove('on'),1400)}},true);
+})();</script>
+
+<style id="layout-fix">
+:root{--envt:env(safe-area-inset-top,0px);--top:max(var(--sat,0px),env(safe-area-inset-top,0px));--bot:max(var(--sab,0px),env(safe-area-inset-bottom,0px))}
+body{padding-top:calc(var(--top) + 60px)!important}
+#menu,#vtquit,#vthelp,#vtvol{top:calc(var(--top) + 8px)!important}
+#menu{min-height:44px!important;padding:8px 12px!important;font-size:14px!important;display:inline-flex;align-items:center}
+#vtquit{left:104px!important;min-height:44px!important;padding:6px 10px!important;font-size:12px!important;border-width:2px!important;opacity:.92}
+#vthelp,#vtvol{width:44px!important;height:44px!important}
+#vthelp{right:60px!important}
+#vtvolp{top:calc(var(--top) + 60px)!important}#hsug{top:calc(var(--top) + 60px)!important}
+#vtbar{bottom:calc(var(--bot) + 6px)!important;min-height:44px}
+#splash{padding-top:calc(var(--top) + 64px)!important;padding-bottom:calc(var(--bot) + 76px)!important;justify-content:space-evenly!important}
+#splash svg#spman{width:min(62vw,40vh,300px)!important}
+#spgo{min-height:56px}#splore{min-height:44px}
+#lobby{padding:calc(var(--top) + 60px) 0 calc(var(--bot) + 70px)!important;box-sizing:border-box}
+#lobby .lb{max-height:100%;overflow:auto}
+#lobby button,#go,#chatb,#mg button,#vtdlg button,#wzc button{min-height:44px}
+#lobby .lb{border-width:4px!important}
+.th-halloween #menu,.th-halloween #vthelp,.th-halloween #vtvol{border-color:#ff8a1f!important;box-shadow:0 3px 0 #0a0510,0 0 10px rgba(255,138,31,.5)!important}
+.th-navidad #menu,.th-navidad #vthelp,.th-navidad #vtvol{border-color:#fff!important;box-shadow:0 3px 0 #0b1e38,0 0 0 2px #d6303a!important}
+.th-halloween #vtquit{border-color:#ff8a1f!important}.th-navidad #vtquit{border-color:#fff!important}
+</style>
+<script src="music.js?v=20261012t"></script>
 </body></html>
