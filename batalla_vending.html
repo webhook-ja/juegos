@@ -1,4 +1,20 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html><html lang="es"><head>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="//libtl.com/sdk.js" data-zone="12014079" data-sdk="show_12014079"></script>
+<script>/* Monetag TMA ads helper (main zone 12014079) */window.ADS=(function(){var Z='show_12014079',CAP=15;
+function k(){return 'ads_'+new Date().toISOString().slice(0,10)}
+function n(){try{return +(localStorage.getItem(k())||0)}catch(e){return 0}}function inc(){try{localStorage.setItem(k(),n()+1)}catch(e){}}
+function uid(){try{var u=Telegram.WebApp.initDataUnsafe.user;if(u&&u.id)return 'tg-'+u.id+'-'+Date.now()}catch(e){}return 'web-'+Date.now()}
+function ok(){return typeof window[Z]==='function'&&n()<CAP}
+function valued(r){return !!(r&&r.reward_event_type==='valued')}
+function reward(tag){if(!ok())return Promise.resolve(false);inc();var id=uid();
+return window[Z]({type:'preload',ymid:id}).then(function(){return window[Z]({ymid:id,requestVar:tag})}).then(valued).catch(function(){return false})}
+function pop(tag){if(!ok())return Promise.resolve(false);inc();return window[Z]({type:'pop',ymid:uid(),requestVar:tag}).then(valued).catch(function(){return false})}
+function inter(){if(!ok())return Promise.resolve();inc();return window[Z]({type:'preload'}).then(function(){return window[Z]()}).then(function(){},function(){})}
+function inApp(){if(typeof window[Z]!=='function')return;window[Z]({type:'inApp',inAppSettings:{frequency:1,capping:0.5,interval:180,timeout:30,everyPage:false}}).catch(function(){})}
+try{window.Telegram&&Telegram.WebApp&&Telegram.WebApp.ready()}catch(e){}
+return{ok:ok,reward:reward,pop:pop,inter:inter,inApp:inApp}})();</script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Batalla Vending</title><style>
 *{box-sizing:border-box}body{margin:0;background:#3f8f3a;font-family:"Arial Black",sans-serif;display:flex;justify-content:center;user-select:none}
 #g{width:420px;height:100vh;max-height:760px;position:relative;background:#5fb34d;overflow:hidden}
@@ -31,7 +47,7 @@
 <div class="card" data-k="0">🧃<small>Lata</small><b>🍫 20</b></div>
 <div class="card" data-k="1">🍟<small>Patatón</small><b>🍫 35</b></div>
 <div class="card" data-k="2">🤖<small>Robot Vending</small><b>🍫 80</b></div></div>
-<div id="end"><div id="et"></div><button onclick="location.reload()">OTRA VEZ</button></div>
+<div id="end"><div id="et"></div><button onclick="location.reload()">OTRA VEZ</button><button id="adrv" style="display:none">📺 VER ANUNCIO Y REVIVIR</button></div>
 </div><script>
 const K=[{c:20,hp:40,d:8,s:1.1,r:26},{c:35,hp:70,d:12,s:.8,r:26},{c:80,hp:200,d:25,s:.5,r:30}];
 const E=['👻','👺','🧟'];const G=g,W=420,LT=210;let food=50,gold=0,hp=[400,400],units=[],frozen=0,over=false,A;
@@ -53,6 +69,7 @@ else u.x+=dir*u.s;}
 units=units.filter(u=>{if(u.hp<=0){u.el.remove();if(u.side){gold+=5;snd(1100,.1,'sine')}return false}u.el.style.left=u.x+'px';u.el.querySelector('.bar').style.width=(u.hp/u.max*30)+'px';u.el.style.filter=u.side&&frozen?'hue-rotate(180deg) brightness(1.3)':'';return true});
 h0.textContent=Math.max(0,hp[0]);h1.textContent=Math.max(0,hp[1]);fd.textContent=food;gd.textContent=gold;
 document.querySelectorAll('.card').forEach(c=>c.classList.toggle('off',food<K[+c.dataset.k].c));ice.classList.toggle('off',food<40);fire.classList.toggle('off',food<50);
-if(hp[0]<=0||hp[1]<=0){over=true;end.style.display='flex';et.innerHTML=hp[1]<=0?'¡VICTORIA!<br>🪙 +'+(gold+100):'DERROTA';snd(hp[1]<=0?800:100,.8,'triangle');return}
+if(hp[0]<=0||hp[1]<=0){over=true;end.style.display='flex';et.innerHTML=hp[1]<=0?'¡VICTORIA!<br>🪙 +'+(gold+100):'DERROTA';snd(hp[1]<=0?800:100,.8,'triangle');adrv.style.display=(hp[0]<=0&&ADS.ok()&&!window._rv)?'':'none';return}
 requestAnimationFrame(loop)}loop();
+adrv.onclick=async()=>{adrv.disabled=true;if(await ADS.reward('batalla_revive')){window._rv=1;hp[0]=200;over=false;end.style.display='none';loop()}adrv.disabled=false;adrv.style.display='none'};
 </script></body></html>

@@ -1,4 +1,20 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html><html lang="es"><head>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="//libtl.com/sdk.js" data-zone="12014079" data-sdk="show_12014079"></script>
+<script>/* Monetag TMA ads helper (main zone 12014079) */window.ADS=(function(){var Z='show_12014079',CAP=15;
+function k(){return 'ads_'+new Date().toISOString().slice(0,10)}
+function n(){try{return +(localStorage.getItem(k())||0)}catch(e){return 0}}function inc(){try{localStorage.setItem(k(),n()+1)}catch(e){}}
+function uid(){try{var u=Telegram.WebApp.initDataUnsafe.user;if(u&&u.id)return 'tg-'+u.id+'-'+Date.now()}catch(e){}return 'web-'+Date.now()}
+function ok(){return typeof window[Z]==='function'&&n()<CAP}
+function valued(r){return !!(r&&r.reward_event_type==='valued')}
+function reward(tag){if(!ok())return Promise.resolve(false);inc();var id=uid();
+return window[Z]({type:'preload',ymid:id}).then(function(){return window[Z]({ymid:id,requestVar:tag})}).then(valued).catch(function(){return false})}
+function pop(tag){if(!ok())return Promise.resolve(false);inc();return window[Z]({type:'pop',ymid:uid(),requestVar:tag}).then(valued).catch(function(){return false})}
+function inter(){if(!ok())return Promise.resolve();inc();return window[Z]({type:'preload'}).then(function(){return window[Z]()}).then(function(){},function(){})}
+function inApp(){if(typeof window[Z]!=='function')return;window[Z]({type:'inApp',inAppSettings:{frequency:1,capping:0.5,interval:180,timeout:30,everyPage:false}}).catch(function(){})}
+try{window.Telegram&&Telegram.WebApp&&Telegram.WebApp.ready()}catch(e){}
+return{ok:ok,reward:reward,pop:pop,inter:inter,inApp:inApp}})();</script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Boxeo vs IA</title><style>
 *{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;user-select:none;font-family:"Arial Black",Impact,sans-serif;color:#fff;background:radial-gradient(circle at 50% 40%,#4aa3ff,#1b3f8f)}
 .top{display:flex;justify-content:space-around;padding:10px}.pill{background:#14204a;border:3px solid #0b1230;border-radius:14px;padding:8px 16px;font-size:22px;box-shadow:0 4px 0 #0b1230}
@@ -23,7 +39,7 @@
 <div id="ring"></div>
 <div class="zone" id="zl"></div><div class="zone" id="zr"></div>
 <div class="btns"><div class="btn" id="bl">◀ IZQUIERDA</div><div class="btn" id="br">DERECHA ▶</div></div>
-<div id="end"><div id="et"></div><button id="rb">🔄 REINICIAR</button></div>
+<div id="end"><div id="et"></div><button id="rb">🔄 REINICIAR</button><button id="adrv" style="display:none">📺 SEGUNDA OPORTUNIDAD</button></div>
 <script>
 function fighter(id,body,hair,band,name){return `<div class="f" id="${id}"><svg viewBox="0 0 280 330">
 <ellipse cx="140" cy="318" rx="85" ry="10" fill="#0b1230" opacity=".4"/>
@@ -45,13 +61,14 @@ if(blocked){d.classList.add('blk');d.querySelector('.pow').textContent='¡BLOQ!'
 else{sc[p]++;document.getElementById('s'+p).textContent=sc[p];d.querySelector('.pow').textContent='¡POW!';d.classList.add('hit');tone(200,50,.15,'square');
 const n=sc[p];d.classList.toggle('b1',n>=3);d.classList.toggle('b2',n>=7);if(n>=WIN){d.classList.add('ko');finish(p)}}
 setTimeout(()=>{a.classList.remove('pL','pR');d.classList.remove('hit','blk');busy[p]=false},180)},90)}
-function finish(p){over=true;clearTimeout(aiT);tone(400,80,.7,'sawtooth');setTimeout(()=>{et.innerHTML=p==0?'¡GANASTE! 🏆':'¡GANA NEW BOT! 🤖';end.style.display='flex'},700)}
+function finish(p){over=true;clearTimeout(aiT);tone(400,80,.7,'sawtooth');setTimeout(()=>{et.innerHTML=p==0?'¡GANASTE! 🏆':'¡GANA NEW BOT! 🤖';end.style.display='flex';adrv.style.display=(p==1&&ADS.ok()&&!window._rv)?'':'none'},700)}
 function aiLoop(){if(over)return;aiT=setTimeout(()=>{const r=Math.random();
 if(r<.25){ai.classList.add('guard');setTimeout(()=>ai.classList.remove('guard'),500+Math.random()*500)}else punch(1,Math.random()<.5?'L':'R');aiLoop()},450+Math.random()*1100)}
 // player guard: hold down arrow or both sides
 onkeydown=e=>{if(e.repeat)return;if(e.key=='ArrowLeft')punch(0,'L');if(e.key=='ArrowRight')punch(0,'R');if(e.key=='ArrowDown'||e.key==' ')me.classList.add('guard')};
 onkeyup=e=>{if(e.key=='ArrowDown'||e.key==' ')me.classList.remove('guard')};
 zl.onpointerdown=()=>punch(0,'L');zr.onpointerdown=()=>punch(0,'R');
-rb.onclick=()=>{sc[0]=sc[1]=0;s0.textContent=s1.textContent=0;F.forEach(f=>f.className='f');over=false;busy=[false,false];end.style.display='none';aiLoop()};
+rb.onclick=()=>{window._rv=0;adrv.style.display='none';sc[0]=sc[1]=0;s0.textContent=s1.textContent=0;F.forEach(f=>f.className='f');over=false;busy=[false,false];end.style.display='none';aiLoop()};adrv.style.display='none';window._rv=0;
+adrv.onclick=async()=>{adrv.disabled=true;if(await ADS.reward('boxeo_second_chance')){window._rv=1;sc[1]=WIN-3;s1.textContent=sc[1];F.forEach(f=>f.classList.remove('ko'));over=false;busy=[false,false];end.style.display='none';aiLoop()}adrv.disabled=false;adrv.style.display='none'};
 aiLoop();
 </script></body></html>

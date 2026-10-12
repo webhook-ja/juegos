@@ -1,10 +1,26 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<!DOCTYPE html><html lang="es"><head>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="//libtl.com/sdk.js" data-zone="12014079" data-sdk="show_12014079"></script>
+<script>/* Monetag TMA ads helper (main zone 12014079) */window.ADS=(function(){var Z='show_12014079',CAP=15;
+function k(){return 'ads_'+new Date().toISOString().slice(0,10)}
+function n(){try{return +(localStorage.getItem(k())||0)}catch(e){return 0}}function inc(){try{localStorage.setItem(k(),n()+1)}catch(e){}}
+function uid(){try{var u=Telegram.WebApp.initDataUnsafe.user;if(u&&u.id)return 'tg-'+u.id+'-'+Date.now()}catch(e){}return 'web-'+Date.now()}
+function ok(){return typeof window[Z]==='function'&&n()<CAP}
+function valued(r){return !!(r&&r.reward_event_type==='valued')}
+function reward(tag){if(!ok())return Promise.resolve(false);inc();var id=uid();
+return window[Z]({type:'preload',ymid:id}).then(function(){return window[Z]({ymid:id,requestVar:tag})}).then(valued).catch(function(){return false})}
+function pop(tag){if(!ok())return Promise.resolve(false);inc();return window[Z]({type:'pop',ymid:uid(),requestVar:tag}).then(valued).catch(function(){return false})}
+function inter(){if(!ok())return Promise.resolve();inc();return window[Z]({type:'preload'}).then(function(){return window[Z]()}).then(function(){},function(){})}
+function inApp(){if(typeof window[Z]!=='function')return;window[Z]({type:'inApp',inAppSettings:{frequency:1,capping:0.5,interval:180,timeout:30,everyPage:false}}).catch(function(){})}
+try{window.Telegram&&Telegram.WebApp&&Telegram.WebApp.ready()}catch(e){}
+return{ok:ok,reward:reward,pop:pop,inter:inter,inApp:inApp}})();</script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>Arena Vending</title><style>html,body{margin:0;height:100%;overflow:hidden;background:#222;touch-action:none;user-select:none;font-family:"Arial Black",sans-serif}
 canvas{display:block;margin:0 auto}#hud{position:fixed;top:8px;left:50%;transform:translateX(-50%);color:#fff;font-size:18px;text-shadow:0 2px 0 #000}
 #end{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,.6);color:#ffd23f;font-size:44px}
 #end button{font:inherit;font-size:22px;margin-top:16px;padding:12px 28px;border-radius:16px;border:3px solid #222;background:linear-gradient(#7cf25a,#3fbf2a);color:#fff;box-shadow:0 6px 0 #222}</style></head><body>
 <canvas id="c"></canvas><div id="hud">🪙 <span id="sc">0</span> · Enemigos: <span id="en">0</span></div>
-<div id="end"><div id="et"></div><button onclick="location.reload()">OTRA VEZ</button></div>
+<div id="end"><div id="et"></div><button onclick="location.reload()">OTRA VEZ</button><button id="adrv" style="display:none">📺 VER ANUNCIO Y REVIVIR</button></div>
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');let W,H;function rs(){W=c.width=innerWidth;H=c.height=innerHeight}rs();onresize=rs;
 const MW=1400,MH=1000,T=50;
@@ -43,7 +59,7 @@ const tg=s.o===P?EN:[P];for(const u of tg)if(Math.hypot(u.x-s.x,u.y-s.y)<u.r+4){
 for(let i=EN.length-1;i>=0;i--)if(EN[i].hp<=0){boom(EN[i].x,EN[i].y,'#ffd23f',40);coins+=20;snd(1000,.3,'triangle');EN.splice(i,1)}
 parts=parts.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.92;p.vy*=.92;return--p.life>0});
 sc.textContent=coins;en.textContent=EN.length;
-if(!over&&(P.hp<=0||!EN.length)){over=true;end.style.display='flex';et.textContent=P.hp>0?'¡VICTORIA! 🏆':'DERROTA 💀'}}
+if(!over&&(P.hp<=0||!EN.length)){over=true;end.style.display='flex';et.textContent=P.hp>0?'¡VICTORIA! 🏆':'DERROTA 💀';adrv.style.display=(P.hp<=0&&ADS.ok()&&!window._rv)?'':'none'}}
 function draw(){const cx=Math.min(Math.max(P.x-W/2,0),Math.max(0,MW-W)),cy=Math.min(Math.max(P.y-H/2,0),Math.max(0,MH-H));
 x.fillStyle='#f0b37e';x.fillRect(0,0,W,H);x.save();x.translate(-cx,-cy);
 x.fillStyle='#e8a56d';for(let i=0;i<MW;i+=T)for(let j=0;j<MH;j+=T)if((i+j)/T%2)x.fillRect(i,j,T,T);
@@ -63,5 +79,6 @@ if(J.a.id!==null&&Math.hypot(J.a.dx,J.a.dy)>10){const a=Math.atan2(J.a.dy,J.a.dx
 x.restore();
 for(const[j,col]of[[J.m,'#3a86ff'],[J.a,'#e63946']])if(j.id!==null){x.fillStyle='rgba(255,255,255,.25)';x.beginPath();x.arc(j.ox,j.oy,60,0,7);x.fill();x.fillStyle=col;x.beginPath();x.arc(j.ox+j.dx,j.oy+j.dy,28,0,7);x.fill()}
 if(t<240){x.fillStyle='rgba(0,0,0,.5)';x.fillRect(W/2-230,H-70,460,50);x.fillStyle='#fff';x.font='14px Arial';x.textAlign='center';x.fillText('Móvil: izquierda mover · derecha apuntar y soltar para disparar',W/2,H-50);x.fillText('PC: WASD/flechas mover · espacio dispara al más cercano',W/2,H-30)}}
+adrv.onclick=async()=>{adrv.disabled=true;if(await ADS.reward('arena_revive')){window._rv=1;P.hp=P.max/2;over=false;end.style.display='none'}adrv.disabled=false;adrv.style.display='none'};
 (function loop(){if(!over)step();draw();requestAnimationFrame(loop)})();
 </script></body></html>
