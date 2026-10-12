@@ -81,4 +81,18 @@ for(const[j,col]of[[J.m,'#3a86ff'],[J.a,'#e63946']])if(j.id!==null){x.fillStyle=
 if(t<240){x.fillStyle='rgba(0,0,0,.5)';x.fillRect(W/2-230,H-70,460,50);x.fillStyle='#fff';x.font='14px Arial';x.textAlign='center';x.fillText('Móvil: izquierda mover · derecha apuntar y soltar para disparar',W/2,H-50);x.fillText('PC: WASD/flechas mover · espacio dispara al más cercano',W/2,H-30)}}
 adrv.onclick=async()=>{adrv.disabled=true;if(await ADS.reward('arena_revive')){window._rv=1;P.hp=P.max/2;over=false;end.style.display='none'}adrv.disabled=false;adrv.style.display='none'};
 (function loop(){if(!over)step();draw();requestAnimationFrame(loop)})();
-</script></body></html>
+</script><script>window.VT_SRC={c:{get:()=>coins,sync:'vt_coins',label:'🪙 partida'}}</script>
+<style>#vtbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(6px + env(safe-area-inset-bottom,0px));z-index:9999;display:flex;gap:6px;align-items:center;background:#14204a;color:#fff;border:3px solid #0b1230;border-radius:16px;box-shadow:0 4px 0 #0b1230;padding:5px 10px;font:clamp(11px,3.3vw,15px) "Arial Black",sans-serif;white-space:nowrap;pointer-events:none;max-width:96vw}#vtbar b{color:#ffd23f}</style>
+<div id="vtbar"></div>
+<script>/* barra de puntos compartida: vt_tokens / vt_coins (solo lectura del juego) */
+(function(){function g(k){try{return +(localStorage.getItem(k)||0)}catch(e){return 0}}function s(k,v){try{localStorage.setItem(k,Math.max(0,v))}catch(e){}}
+var bar=document.getElementById('vtbar'),src=window.VT_SRC||{},last={};var tu={};try{tu=(Telegram.WebApp.initDataUnsafe||{}).user||{}}catch(e){}var nm=(tu.first_name||'Jugador').replace(/[<>&"]/g,'');
+var av=tu.photo_url&&/^https:\/\//.test(tu.photo_url)?'<img src="'+tu.photo_url.replace(/"/g,'')+'" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #ffd23f">':'<span style="width:30px;height:30px;border-radius:50%;background:#e63946;border:2px solid #ffd23f;display:inline-flex;align-items:center;justify-content:center">'+nm[0].toUpperCase()+'</span>';
+var head=av+' <span>'+nm+'</span>';
+
+function tick(){var parts=[];for(var key in src){var cur;try{cur=src[key].get()}catch(e){continue}
+if(src[key].sync){if(last[key]!==undefined&&cur!==last[key])s(src[key].sync,g(src[key].sync)+(cur-last[key]));last[key]=cur}
+if(src[key].label)parts.push(src[key].label+' <b>'+cur+'</b>')}
+bar.innerHTML=head+' · '+parts.concat(['🎟 total <b>'+g('vt_tokens')+'</b>','🪙 total <b>'+g('vt_coins')+'</b>']).join(' · ')}
+tick();setInterval(tick,250)})();</script>
+</body></html>
