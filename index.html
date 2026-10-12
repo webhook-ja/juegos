@@ -796,6 +796,7 @@ mgcas:w=>['Pruebas mágicas','Las '+w.mg+' son minijuegos. Si ganas: +200 de oro
 anuncio:w=>['Anuncios con premio','Los botones de anuncio te dan ayudas (una 🎟, repetir o premio x2). Solo cuenta si ves el anuncio entero. Máximo 15 al día.'],
 carta:w=>['El '+w.card,'Saca una carta al azar: puede darte oro, fichas, hacerte avanzar o retarte a una prueba.'],
 avatar:w=>['Tu personaje','Elige sombrero, capa, equipo y más. Los objetos con 🔒 se desbloquean subiendo de nivel, ganando pruebas o jugando partidas en sala. Toca uno para ver qué necesitas.'],
+daily:w=>['Tareas diarias','Cada día (se reinician a medianoche) tienes 5 tareas: cada una da +1 🎟. Si haces las 5 ganas +2 🎟 y sumas racha. Con 3 días seguidos: +3 🎟.'],
 especial:w=>['Casillas especiales',w.coin+': +100 de oro. '+w.gift+': +1 🎟 y 50–199 de oro. '+w.lot+': +1 🎟 y 30% de ganar 300 (si no, -50). '+w.jail+': multa de 50.']};
 const KEY=id=>'vt_tip_'+id,off=()=>localStorage.getItem('vt_tips_off')==='1';let q=Promise.resolve();
 window.TIP=function(id){if(off()||localStorage.getItem(KEY(id))||!TX[id])return Promise.resolve();localStorage.setItem(KEY(id),'1');
@@ -804,7 +805,7 @@ const done=()=>{T.style.display='none';r()};B.querySelectorAll('button')[1].oncl
 function help(){const w=W(),S=[['🎯 Objetivo','Recorre el tablero, compra '+w.land+' y '+w.biz+', y cobra alquiler. Si alguien se queda sin oro (menos de 0), queda fuera. ¡El último en pie gana! Todos empiezan con 1500 de oro.'],
 ['🎲 Turno','Pulsa TIRAR (dado de 12 caras) y avanza. Pasar por SALIDA: +200 de oro y +1 🎟.'],
 ['🏡 Comprar y construir',TX.compra(w)[1]+' '+TX.casa(w)[1]],['✨ Pruebas',TX.mgcas(w)[1]],['📜 Casillas especiales',TX.especial(w)[1]+' '+TX.carta(w)[1]],
-['🎟 Fichas',TX.tokens(w)[1]],['📺 Anuncios',TX.anuncio(w)[1]],['👥 Salas y chat','Crea o únete a una sala de 2 a 4 jugadores. El chat solo aparece dentro de una sala.'],['⚙️ Ajustes','Con el botón 🔊 cambias el volumen, silencias y eliges el tema (Reino o Halloween).']];
+['🎟 Fichas',TX.tokens(w)[1]],['📺 Anuncios',TX.anuncio(w)[1]],['👥 Salas y chat','Crea o únete a una sala de 2 a 4 jugadores. El chat solo aparece dentro de una sala.'],['📅 Tareas diarias',TX.daily(w)[1]+' Invitar a 3 amigos da +5 🎟 una vez.'],['🎨 Personaje',TX.avatar(w)[1]],['⚙️ Ajustes','Con el botón 🔊 cambias el volumen, silencias y eliges el tema (Reino o Halloween).']];
 const H=document.getElementById('helpb');H.innerHTML='<h2>Cómo se juega</h2>'+S.map(([a,b])=>'<details><summary>'+a+'</summary><p>'+b+'</p></details>').join('')+'<div class="hb"><button id="hrs" type="button">Reiniciar consejos</button><button id="hcl" type="button">Cerrar</button></div>';
 const P=document.getElementById('help');P.style.display='flex';document.getElementById('hcl').onclick=()=>P.style.display='none';P.onclick=e=>{if(e.target===P)P.style.display='none'};
 document.getElementById('hrs').onclick=()=>{Object.keys(localStorage).filter(k=>k.startsWith('vt_tip_')||k==='vt_tips_off').forEach(k=>localStorage.removeItem(k));document.getElementById('hrs').textContent='✅ Reiniciados'}}
@@ -867,4 +868,41 @@ document.getElementById('avsv').onclick=async()=>{const b=document.getElementByI
 let ok2=false;try{const data={};for(const k in mine)data[k]=String(mine[k]);const r=await fetch(FN,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'save',initData:(tg&&tg.initData)||'',tg_id:me,data})}).then(r=>r.json());ok2=!!(r&&r.ok)}catch(e){}
 b.textContent=ok2?'✅ Guardado':'💾 Guardado en este móvil';setTimeout(()=>document.getElementById('ave').style.display='none',700)}}
 })();</script>
+<style>#pdaily .dt{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.22);border-radius:14px;padding:6px 8px;margin:4px 0;font-size:13px}
+#pdaily .dt i{font-style:normal;font-size:20px}#pdaily .dt span{flex:1}#pdaily .dt small{display:block;font:11px Arial;opacity:.85}#pdaily .dt button{font-size:11px;padding:6px 10px;min-height:0}#pdaily .dt.ok{opacity:.6}
+#pdaily .dh{display:flex;justify-content:space-between;align-items:center}#pdaily .stk{font:13px Georgia,serif}</style>
+<script>/* tareas diarias (reinicio a medianoche de Madrid), racha y bonus por referidos */
+(function(){const FN='https://nlkltjywdupkqiwctzpr.supabase.co/functions/v1/daily',tg=window.Telegram&&Telegram.WebApp;let u={};try{u=tg.initDataUnsafe.user||{}}catch(e){}
+const me=u.id||+localStorage.getItem('vt_web_id'),day=(d=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+const J=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}};
+const call=o=>fetch(FN,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({initData:(tg&&tg.initData)||'',tg_id:me},o))}).then(r=>r.json()).catch(()=>({}));
+const loc=k=>localStorage.getItem('vt_d_'+day()+'_'+k)==='1',mark=k=>localStorage.setItem('vt_d_'+day()+'_'+k,'1');
+const T=[['play','🎲','Juega 1 partida en sala','+1 🎟 · +20 XP',()=>J('vt_pvp').some(x=>day(new Date(x.d))===day())],
+['win','✨','Gana 1 prueba mágica','+1 🎟 · +20 XP',()=>J('vt_games').some(x=>x.who=='Tú'&&x.w&&day(new Date(x.d))===day())],
+['share','📨','Comparte el juego con un amigo','+1 🎟 · +20 XP',()=>loc('share'),'Compartir'],
+['wallpaper','🖼️','Descarga el fondo de pantalla del tema','+1 🎟 · +20 XP',()=>loc('wallpaper'),'Descargar'],
+['ad','📺','Mira 1 anuncio con premio completo','+1 🎟 · +20 XP',()=>loc('ad'),'Ver anuncio']];
+const REW={play:[1,20],win:[1,20],share:[1,20],wallpaper:[1,20],ad:[1,20],all:[2,50],streak3:[3,60],ref3:[5,100]};
+let st={done:[],once:[],streak:0};
+function give(k){const[t,x]=REW[k];localStorage.setItem('vt_tokens',String((+localStorage.getItem('vt_tokens')||0)+t));localStorage.setItem('vt_xp_bonus',String((+localStorage.getItem('vt_xp_bonus')||0)+x));try{snd(1200,.15)}catch(e){}}
+async function claim(k,el){const r=await call({action:'claim',task:k});if(r&&r.ok){give(k);st.done.push(k);if(k==='ref3')st.once.push(k);if(r.streak!=null){st.streak=r.streak;localStorage.setItem('vt_streak',r.streak)}}else if(el)el.textContent=r&&r.error==='need 3 referrals'?'Necesitas 3':'Ya hecho';draw()}
+function wallpaper(){const c=document.createElement('canvas');c.width=1080;c.height=1920;const x=c.getContext('2d'),h=window.THEME&&THEME.cur()==='halloween';
+const g=x.createLinearGradient(0,0,0,1920);g.addColorStop(0,h?'#120a1c':'#0e1a33');g.addColorStop(.6,h?'#2a1440':'#14213d');g.addColorStop(1,h?'#1b2a14':'#1f3a2a');x.fillStyle=g;x.fillRect(0,0,1080,1920);
+for(let i=0;i<160;i++){x.fillStyle='rgba(255,255,255,'+Math.random()+')';x.beginPath();x.arc(Math.random()*1080,Math.random()*1200,Math.random()*2.5,0,7);x.fill()}
+x.fillStyle=h?'#ffe9a8':'#fff3c4';x.beginPath();x.arc(820,300,110,0,7);x.fill();
+return new Promise(res=>{const sv=document.getElementById('spman').cloneNode(true);sv.setAttribute('xmlns','http://www.w3.org/2000/svg');if(h){sv.querySelector('#wzhat')?.remove();sv.querySelector('#wzgem')?.remove();sv.querySelector('#wzglow')?.remove();['wzhatw','wzlant'].forEach(i=>{const e=sv.querySelector('#'+i);if(e)e.style.display='inline'});sv.querySelector('.wzcloak')?.setAttribute('fill','#3b2159')}
+const im=new Image();im.onload=()=>{x.drawImage(im,240,560,600,750);x.textAlign='center';x.font='bold 120px Georgia';x.lineWidth=12;x.strokeStyle='#2a1a0e';x.fillStyle=h?'#ff9a3a':'#f3c33b';x.strokeText('Vending Town',540,1500);x.fillText('Vending Town',540,1500);x.font='60px Georgia';x.fillStyle='#ffe9a8';x.fillText(h?'— Noche de Halloween —':'— El Reino —',540,1600);
+const a=document.createElement('a');a.download='vending-town-'+(h?'halloween':'reino')+'.png';a.href=c.toDataURL('image/png');document.body.appendChild(a);a.click();a.remove();res(true)};im.onerror=()=>res(false);im.src='data:image/svg+xml;utf8,'+encodeURIComponent(new XMLSerializer().serializeToString(sv))})}
+let box=null;function draw(){if(!box||!document.body.contains(box))return;const all=T.every(t=>st.done.includes(t[0]));
+box.innerHTML='<div class="dh"><h3>📅 Tareas de hoy</h3><span class="stk">🔥 Racha: '+st.streak+' día'+(st.streak==1?'':'s')+'</span></div>'+T.map(t=>{const d=st.done.includes(t[0]),can=t[4]();return '<div class="dt'+(d?' ok':'')+'"><i>'+t[1]+'</i><span>'+t[2]+'<small>'+t[3]+'</small></span>'+(d?'✅':can?'<button data-c="'+t[0]+'">Cobrar</button>':t[5]?'<button data-a="'+t[0]+'">'+t[5]+'</button>':'<small>Pendiente</small>')+'</div>'}).join('')+
+'<div class="dt'+(st.done.includes('all')?' ok':'')+'"><i>🏅</i><span>Completa las 5 tareas<small>+2 🎟 · +50 XP · suma 1 día de racha</small></span>'+(st.done.includes('all')?'✅':all?'<button data-c="all">Cobrar</button>':'<small>'+T.filter(t=>st.done.includes(t[0])).length+'/5</small>')+'</div>'+
+'<div class="dt'+(st.done.includes('streak3')?' ok':'')+'"><i>🔥</i><span>Racha de 3 días<small>+3 🎟 · +60 XP (una vez al día con racha ≥3)</small></span>'+(st.done.includes('streak3')?'✅':st.streak>=3?'<button data-c="streak3">Cobrar</button>':'<small>'+st.streak+'/3</small>')+'</div>'+
+'<div class="dt'+(st.once.includes('ref3')?' ok':'')+'"><i>🤝</i><span>Invita a 3 amigos<small>+5 🎟 · +100 XP (una sola vez)</small></span>'+(st.once.includes('ref3')?'✅':'<button data-c="ref3">Cobrar</button>')+'</div>';
+box.querySelectorAll('button[data-c]').forEach(b=>b.onclick=()=>{b.disabled=true;claim(b.dataset.c,b)});
+box.querySelectorAll('button[data-a]').forEach(b=>b.onclick=async()=>{const k=b.dataset.a;b.disabled=true;
+if(k==='share'){const link='https://t.me/TableroPueblo_bot?startapp=ref_'+(u.id||'');try{tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent('¡Juega conmigo a Vending Town!'))}catch(e){try{navigator.share&&navigator.share({url:link})}catch(_){}}mark('share')}
+if(k==='wallpaper'){if(await wallpaper())mark('wallpaper')}
+if(k==='ad'){const prev=window.VT_GAME;window.VT_GAME='tablero';const v=await (window.ADS?ADS.reward('daily'):Promise.resolve(false));window.VT_GAME=prev;if(v)mark('ad');else b.textContent='No completado'}
+draw()})}
+window.DAILY={render:el=>{box=el;draw();call({action:'state'}).then(r=>{if(r&&r.ok){st={done:r.done||[],once:r.once||[],streak:r.streak||0};localStorage.setItem('vt_streak',st.streak);draw()}});try{TIP('daily')}catch(e){}}}})();</script>
 </body></html>
