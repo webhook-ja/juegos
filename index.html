@@ -67,7 +67,7 @@ body{min-height:var(--vh,100vh);align-items:flex-start;padding-top:52px}
 </div></div></div>
 <div id="mg"><div id="mgb"><div id="mgt"></div><div id="mgi"></div><div id="mga"></div><div id="mgr"></div></div></div>
 <div class="tok" id="t0"></div><div class="tok" id="t1"></div><div class="tok" id="t2" style="display:none"></div><div class="tok" id="t3" style="display:none"></div>
-<script src='minijuegos_party.js?v=20261012f'></script>
+<script src='minijuegos_party.js?v=20261012s'></script>
 <script>
 const HMUL=[1,2,3,4,6],houses={};
 const _S=(b)=>'<svg viewBox="0 0 64 64" width="38" height="38" style="filter:drop-shadow(0 3px 0 rgba(0,0,0,.25))">'+b+'</svg>';
@@ -1256,42 +1256,43 @@ let pass=false;document.addEventListener('click',e=>{const b=e.target.closest&&e
 /* fichas en el tablero: cada jugador con la ficha elegida (o asignada) */
 window.TOKAPPLY=(list)=>{list.forEach((id,i)=>{const el=document.getElementById('t'+i);if(!el)return;if(el.dataset.tk!==id){el.dataset.tk=id;el.classList.add('tkx');el.innerHTML=TOKS.svg(id);el.title=TOKS.name(id)}})};
 })();</script>
-<!-- ===== Misión 1: Conoce a tu avatar (tutorial obligatorio la primera vez) ===== -->
-<style>#tuto{position:fixed;inset:0;z-index:14200;background:radial-gradient(circle at 50% 30%,#3b5f96,#14213d 60%,#0a1020);display:flex;flex-direction:column;align-items:center;padding:calc(var(--top,0px) + 14px) 10px calc(var(--bot,0px) + 14px);font:15px 'MedievalSharp',Georgia,serif;color:#ffe9a8}
+<!-- ===== Misión 1: Conoce a tu avatar (historia con elecciones) ===== -->
+<style>#tuto{position:fixed;inset:0;z-index:14200;background:radial-gradient(circle at 50% 30%,#3b5f96,#14213d 60%,#0a1020);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:calc(var(--top,0px) + 14px) 10px calc(var(--bot,0px) + 14px);font:16px 'MedievalSharp',Georgia,serif;color:#2a1a0e}
 .th-halloween #tuto{background:radial-gradient(circle at 50% 30%,#5a2a7a,#2a1440 55%,#120a1c)}.th-navidad #tuto{background:radial-gradient(circle at 50% 30%,#2f6aa0,#173a5e 55%,#0b1e38)}
-#tuto h2{margin:0;font:20px 'Cinzel Decorative',Georgia,serif;color:#f3c33b;text-align:center}
-#tuto .pb{width:min(90vw,380px);height:12px;border:2px solid #2a1a0e;border-radius:8px;background:#2a1a0e;margin:8px 0;overflow:hidden}#tuto .pb i{display:block;height:100%;background:linear-gradient(90deg,#7cf25a,#f3c33b);transition:width .4s}
-#tuto .map{position:relative;flex:1;width:min(94vw,400px);max-height:460px;border:4px solid #2a1a0e;border-radius:20px;background:radial-gradient(circle at 30% 25%,#f3e3bb,#dcc28a);box-shadow:0 8px 0 #2a1a0e;margin:6px 0}
-#tuto .st{position:absolute;transform:translate(-50%,-50%);width:70px;min-height:64px;border:3px solid #2a1a0e;border-radius:16px;background:#e9d29a;color:#2a1a0e;font:11px 'MedievalSharp',serif;text-align:center;padding:4px;cursor:pointer}
-#tuto .st b{display:block;font-size:24px}#tuto .st.nx{background:#ffd76a;animation:pulse 1.2s infinite;box-shadow:0 0 0 4px #fff}#tuto .st.ok{background:#9be060}#tuto .st.ok:after{content:"✔";position:absolute;top:-8px;right:-6px;font-size:16px}
-#tuto .me{position:absolute;width:52px;height:60px;transform:translate(-50%,-80%);transition:left .9s ease-in-out,top .9s ease-in-out;pointer-events:none;z-index:2}#tuto .me img,#tuto .me svg{width:100%;height:100%;object-fit:contain;animation:bob 1s ease-in-out infinite}
-#tuto .path{position:absolute;inset:0;width:100%;height:100%}
-#tuto .tip{width:min(94vw,400px);min-height:92px;display:flex;gap:8px;align-items:flex-start;background:rgba(42,26,14,.92);border:3px solid #f3c33b;border-radius:16px;padding:8px}
-#tuto .tip span{font-size:34px}#tuto .tip button{min-height:44px;margin-top:6px;font:14px "Arial Black",sans-serif;padding:6px 14px;border:3px solid #2a1a0e;border-radius:12px;background:linear-gradient(#ffd76a,#e0a52b);color:#2a1a0e;cursor:pointer}
-#tuto .die{font-size:44px;display:inline-block}#tuto .die.r{animation:spspin .7s}</style>
+#tuto h2{margin:0;font:19px 'Cinzel Decorative',Georgia,serif;color:#f3c33b;text-align:center}
+#tuto .pb{width:min(90vw,380px);height:12px;border:2px solid #2a1a0e;border-radius:8px;background:#2a1a0e;overflow:hidden}#tuto .pb i{display:block;height:100%;background:linear-gradient(90deg,#7cf25a,#f3c33b);transition:width .4s}
+#tuto .pg{width:min(94vw,420px);max-height:72vh;overflow:auto;background:radial-gradient(circle at 30% 20%,#f8ecc8,#e6cf98 60%,#c9a866);border:4px solid #3a2414;border-radius:16px;box-shadow:0 0 0 5px #6b4424,0 12px 30px #000;padding:14px;animation:lrin .4s}
+#tuto .sc{display:flex;gap:10px;align-items:flex-end;justify-content:center;min-height:90px}#tuto .sc .who{width:70px;height:84px}#tuto .sc .who img,#tuto .sc .who svg{width:100%;height:100%;object-fit:contain}
+#tuto .tx{margin:8px 0;line-height:1.45}#tuto .tx b{color:#7a1a0e}
+#tuto .ch{display:flex;flex-direction:column;gap:8px;margin-top:8px}#tuto .ch button{min-height:48px;text-align:left;font:15px 'MedievalSharp',serif;padding:8px 12px;border:3px solid #2a1a0e;border-radius:12px;background:linear-gradient(#ffd76a,#e0a52b);color:#2a1a0e;cursor:pointer;box-shadow:0 4px 0 #2a1a0e}
+#tuto .ch button.fin{background:linear-gradient(#9be060,#5aa832)}#tuto .die{font-size:46px;display:inline-block}#tuto .die.r{animation:spspin .7s}
+#tuto .hud{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:6px 0}#tuto .hud span{border:2px solid #2a1a0e;border-radius:10px;padding:4px 8px;background:#ffd76a;font:13px "Arial Black",sans-serif}</style>
 <script>(function(){
-const ST=[
-['🏰','Salas',22,18,'Aquí, en las <b>Salas</b>, creas una partida o te unes a la de tus amigos. ¡Toca la siguiente parada para seguir!'],
-['🎲','Tablero',75,22,'Este es el <b>tablero</b>. En tu turno tiras el dado y avanzas. Prueba: ','roll'],
-['✨','Prueba',78,55,'Las casillas mágicas lanzan una <b>prueba</b>. Practica: ¡toca 8 veces en 3 segundos!','tap'],
-['🎨','Avatar',50,72,'En la <b>tienda de avatar</b> (tu foto en la barra de abajo) cambias tu aspecto y desbloqueas prendas.'],
-['📅','Tareas',22,58,'Las <b>tareas diarias</b> te dan fichas 🎟 y experiencia cada día. ¡No rompas la racha!'],
-['🍺','Taberna',30,88,'En la <b>taberna</b> (el chat de la sala) hablas con los demás jugadores. ¡Misión cumplida!']];
-let o=null,i=0,done=[],cb=null;
-const av=()=>{let u=null;try{u=AV.mine()}catch(e){}return u?'<img src="'+u+'" alt="">':(window.TOKS?TOKS.svg(TOKS.get()||'mago'):'🧑')};
+const TOP=['avatar','menu','dado','prueba','pueblo'];
+const WIZ=()=>'<svg viewBox="0 0 64 74">'+(window.TOKS?TOKS.svg('mago').replace(/^<svg[^>]*>|<\/svg>$/g,''):'')+'</svg>';
+const ME=()=>{let u=null;try{u=AV.mine()}catch(e){}return u?'<img src="'+u+'" alt="">':(window.TOKS?TOKS.svg(TOKS.get()||'herbolaria'):'🧑')};
+const LBL={avatar:'🪞 Mirarme en el charco del camino',menu:'🧭 Preguntar qué son esos carteles de la entrada',dado:'🎲 Pedirle paso: «¡Quiero jugar!»',prueba:'✨ Tocar la losa brillante que hay a tus pies',pueblo:'🏚️ Preguntar por qué el pueblo está en ruinas'};
+let o=null,seen=[],cb=null;
 function snd(f){if(!(window.VOL>0))return;try{const C=new (window.AudioContext||window.webkitAudioContext)(),x=C.createOscillator(),g=C.createGain();x.frequency.value=f;g.gain.setValueAtTime(.08,C.currentTime);g.gain.exponentialRampToValueAtTime(.001,C.currentTime+.2);x.connect(g).connect(C.destination);x.start();x.stop(C.currentTime+.2)}catch(e){}}
-function draw(){const m=o.querySelector('.map');m.querySelectorAll('.st').forEach((e,k)=>{e.className='st'+(done.includes(k)?' ok':'')+(k===i?' nx':'')});o.querySelector('.pb i').style.width=(done.length/ST.length*100)+'%'}
-function tip(html,btn,fn){const t=o.querySelector('.tip div');t.innerHTML=html+(btn?'<br><button type="button">'+btn+'</button>':'');if(btn)t.querySelector('button').onclick=fn}
-function go(k){if(k!==i)return;const s=ST[k],me=o.querySelector('.me');me.style.left=s[2]+'%';me.style.top=s[3]+'%';snd(500+k*80);
-setTimeout(()=>{const fin=()=>{done.push(k);i++;draw();snd(880);if(i>=ST.length)tip('🎉 <b>¡Misión 1 completada!</b> Ya conoces el pueblo.','Continuar',close);else tip('¡Bien! Ahora ve a <b>'+ST[i][1]+'</b>.')};
- if(s[5]==='roll'){tip(s[4]+'<span class="die">🎲</span>','Tirar',()=>{const d=o.querySelector('.die');d.classList.add('r');setTimeout(()=>{d.classList.remove('r');d.textContent=1+Math.floor(Math.random()*12);tip('¡Has sacado un <b>'+d.textContent+'</b>! Así se avanza.','Entendido',fin)},700)})}
- else if(s[5]==='tap'){let c=0,t0=0,iv;tip(s[4],'👊 0',null);const b=o.querySelector('.tip button');b.onclick=()=>{if(!t0){t0=Date.now();iv=setInterval(()=>{if(Date.now()-t0>3000){clearInterval(iv);if(c<8){c=0;t0=0;b.textContent='👊 Otra vez';tip('¡Casi! Inténtalo otra vez.','👊 0',null);o.querySelector('.tip button').onclick=b.onclick}}},100)}c++;b.textContent='👊 '+c;snd(300+c*40);if(c>=8){clearInterval(iv);tip('¡Prueba superada! 🏆','Entendido',fin)}}}
- else tip(s[4],'Entendido',fin)},900)}
+function scene(who,html,extra){o.querySelector('.pb i').style.width=(seen.length/TOP.length*100)+'%';
+ const left=TOP.filter(t=>!seen.includes(t));const ch=left.map(t=>'<button type="button" data-t="'+t+'">'+LBL[t]+'</button>').join('')+(left.length?'':'<button type="button" class="fin" data-t="fin">🚪 Cruzar la puerta del pueblo</button>');
+ o.querySelector('.pg').innerHTML='<div class="sc"><div class="who">'+(who==='me'?ME():WIZ())+'</div>'+(who==='both'?'<div class="who">'+ME()+'</div>':'')+'</div><div class="tx">'+html+'</div>'+(extra||'')+'<div class="ch">'+(extra?'':ch)+'</div>';
+ o.querySelectorAll('.ch button').forEach(b=>b.onclick=()=>{snd(520);go(b.dataset.t)})}
+function done(t){if(!seen.includes(t))seen.push(t);snd(880)}
+function go(t){
+ if(t==='fin'){done('fin');return scene('both','El posadero se aparta y sonríe bajo el monóculo: <i>«Pasa, forastero. Pero antes, deja que te cuente una historia…»</i><br><br><b>¡Misión 1 completada!</b>','<div class="ch"><button type="button" class="fin" id="tfin">▶ Escuchar la leyenda</button></div>'),o.querySelector('#tfin').onclick=close}
+ if(t==='avatar'){done(t);return scene('me','Te asomas al agua y ves <b>tu avatar</b>. <i>«Ese eres tú»</i>, gruñe el posadero. <i>«Si no te gusta tu cara, en la <b>tienda de avatar</b> (tu foto en la barra de abajo) puedes cambiar sombrero, capa y equipo. Ganando pruebas desbloquearás prendas mejores.»</i>')}
+ if(t==='menu'){done(t);return scene('mago','El posadero señala los carteles: <div class="hud"><span>⬅ Menú</span><span>🚪 Salir</span><span>?</span><span>🔊</span></div><i>«<b>⬅ Menú</b> te trae de vuelta a esta puerta. <b>🚪 Salir</b> abandona una partida (tu récord se guarda). <b>?</b> es mi libro de ayuda, y en <b>🔊</b> eliges música, efectos y el tema del reino: Reino, Halloween o Navidad.»</i>')}
+ if(t==='dado'){scene('mago','<i>«¿Jugar? Primero demuéstrame que sabes tirar los dados del destino.»</i> En tu turno tiras el dado y avanzas por las casillas del tablero.','<div style="text-align:center"><span class="die">🎲</span><div class="ch"><button type="button" id="troll">🎲 Tirar el dado</button></div></div>');
+  o.querySelector('#troll').onclick=()=>{const d=o.querySelector('.die');d.classList.add('r');snd(400);setTimeout(()=>{d.classList.remove('r');d.textContent=1+Math.floor(Math.random()*12);done('dado');
+   scene('mago','¡Sacas un <b>'+d.textContent+'</b>! <i>«Así se avanza. Cuando caigas en una tierra libre, podrás <b>comprarla con tus monedas</b>; si otro cae en ella, te pagará.»</i>')},700)};return}
+ if(t==='prueba'){let c=0,t0=0,iv=null;scene('mago','La losa brilla: es una <b>casilla mágica</b>. Al pisarla empieza una <b>prueba</b> (un minijuego) contra otro jugador o contra tu récord. <i>«¡Golpea la losa 8 veces en 3 segundos!»</i>','<div class="ch"><button type="button" id="ttap">👊 0</button></div>');
+  const b=o.querySelector('#ttap');b.onclick=()=>{if(!t0){t0=Date.now();iv=setInterval(()=>{if(Date.now()-t0>3000){clearInterval(iv);if(c<8){c=0;t0=0;b.textContent='👊 ¡Otra vez!'}}},100)}c++;b.textContent='👊 '+c;snd(300+c*40);if(c>=8){clearInterval(iv);done('prueba');scene('mago','<i>«¡Ja! Tienes buen puño.»</i> Ganar pruebas te da <b>oro</b> y desbloquea cosas para tu avatar.')}};return}
+ if(t==='pueblo'){done(t);return scene('mago','<i>«Larga historia… El pueblo se apagó casilla a casilla. Para devolverle la vida: juega en las <b>Salas</b> con amigos o en solitario, cumple las <b>tareas diarias</b> 📅 para ganar fichas, y charla en la <b>taberna</b> y con tus <b>Amigos del pueblo</b> 👥.»</i>')}}
 function close(){localStorage.setItem('vt_tuto','1');o.remove();o=null;const c=cb;cb=null;c&&c()}
-window.TUTO={first:()=>!localStorage.getItem('vt_tuto'),play:c=>{if(o)return;cb=c;i=0;done=[];o=document.createElement('div');o.id='tuto';
-o.innerHTML='<h2>Misión 1: Conoce a tu avatar</h2><div class="pb"><i style="width:0"></i></div><div class="map"><svg class="path" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M22 18L75 22L78 55L50 72L22 58L30 88" stroke="#8a5a33" stroke-width="1.6" stroke-dasharray="3 2" fill="none"/></svg>'+ST.map((s,k)=>'<div class="st" data-k="'+k+'" style="left:'+s[2]+'%;top:'+s[3]+'%"><b>'+s[0]+'</b>'+s[1]+'</div>').join('')+'<div class="me" style="left:50%;top:40%">'+av()+'</div></div><div class="tip"><span>🧙</span><div></div></div>';
-document.body.appendChild(o);o.querySelectorAll('.st').forEach(e=>e.onclick=()=>go(+e.dataset.k));draw();tip('¡Bienvenido, forastero! Soy el posadero. Toca <b>Salas</b> para que tu avatar camine hasta allí.')}};
-/* "Repetir tutorial" en la ayuda */
+window.TUTO={first:()=>!localStorage.getItem('vt_tuto'),play:c=>{if(o)return;cb=c;seen=[];o=document.createElement('div');o.id='tuto';
+ o.innerHTML='<h2>Misión 1: Conoce a tu avatar</h2><div class="pb"><i style="width:0"></i></div><div class="pg"></div>';document.body.appendChild(o);
+ scene('mago','Llegas al atardecer a las puertas de un pueblo medio en ruinas. Un viejo posadero con monóculo te cierra el paso con su bastón: <i>«¡Alto, forastero! Nadie entra en Vending Town sin conocer sus costumbres. ¿Qué haces?»</i>')}};
 setInterval(()=>{const h=document.getElementById('helpb');if(h&&h.offsetParent&&!document.getElementById('rptuto')){const b=document.createElement('button');b.id='rptuto';b.type='button';b.textContent='🧭 Repetir tutorial';b.style.cssText='min-height:44px;margin-top:8px;font:14px "Arial Black",sans-serif;padding:6px 14px;border:3px solid #2a1a0e;border-radius:12px;background:#ffd76a;color:#2a1a0e;cursor:pointer';b.onclick=()=>{try{document.getElementById('help').style.display='none'}catch(e){}TUTO.play()};h.appendChild(b)}},800);
 })();</script>
 
@@ -1388,5 +1389,5 @@ body{padding-top:calc(var(--top) + 60px)!important}
 .th-navidad #menu,.th-navidad #vthelp,.th-navidad #vtvol{border-color:#fff!important;box-shadow:0 3px 0 #0b1e38,0 0 0 2px #d6303a!important}
 .th-halloween #vtquit{border-color:#ff8a1f!important}.th-navidad #vtquit{border-color:#fff!important}
 </style>
-<script src="music.js?v=20261012f"></script>
+<script src="music.js?v=20261012s"></script>
 </body></html>
