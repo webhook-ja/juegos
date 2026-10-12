@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel de ganancias · Vending Town</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0f1220;color:#e8eaf6}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#171b2e;border-bottom:1px solid #262b45}
+h1{font-size:18px;margin:0}h2{font-size:15px;margin:0 0 10px;color:#aab}
+main{max-width:1100px;margin:0 auto;padding:18px}
+.card{background:#171b2e;border:1px solid #262b45;border-radius:12px;padding:16px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.kpi .v{font-size:24px;font-weight:700;margin-top:4px}.kpi .l{font-size:12px;color:#99a}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:760px){.two{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:7px 8px;border-bottom:1px solid #262b45;text-align:left;white-space:nowrap}th{color:#99a;font-weight:600}
+.scroll{overflow-x:auto}
+input{width:100%;padding:10px;border-radius:8px;border:1px solid #333a5c;background:#0f1220;color:#fff;margin:6px 0 12px;font-size:15px}
+button{padding:9px 16px;border:0;border-radius:8px;background:#5b6cff;color:#fff;font-weight:600;cursor:pointer}button.sec{background:#2a3050}
+.err{color:#ff7b7b;min-height:18px;font-size:14px}.ok{color:#6fe39a;font-size:14px}
+#login{max-width:360px;margin:12vh auto}.hidden{display:none}.muted{color:#889;font-size:12px}
+</style>
+</head>
+<body>
+<div id="login" class="card">
+  <h1>Panel de ganancias Monetag</h1><p class="muted">Acceso solo para el propietario.</p>
+  <form id="lf"><label>Contraseña</label><input type="password" id="pw" autocomplete="current-password" required><div class="err" id="lerr"></div><button>Entrar</button></form>
+</div>
+<div id="app" class="hidden">
+<header><h1>💰 Ganancias Monetag · Vending Town</h1><div><button class="sec" id="rf">Actualizar</button> <button class="sec" id="lo">Salir</button></div></header>
+<main>
+  <div class="grid" id="kpis"></div><p class="muted" id="gen"></p>
+  <div class="card"><h2>Últimos 30 días</h2><canvas id="cDay" height="90"></canvas></div>
+  <div class="two">
+    <div class="card"><h2>Por tipo de evento</h2><canvas id="cEv" height="160"></canvas></div>
+    <div class="card"><h2>Por tipo de recompensa</h2><canvas id="cRw" height="160"></canvas></div>
+  </div>
+  <div class="card"><h2>Por zona / subzona</h2><div class="scroll"><table id="tZone"></table></div></div>
+  <div class="card"><h2>Últimos 20 eventos</h2><div class="scroll"><table id="tLast"></table></div></div>
+  <div class="card" style="max-width:420px"><h2>Cambiar contraseña</h2>
+    <form id="cf"><label>Contraseña actual</label><input type="password" id="cur" required autocomplete="current-password"><label>Nueva contraseña (mín. 12 caracteres)</label><input type="password" id="np1" minlength="12" required autocomplete="new-password"><label>Repite la nueva</label><input type="password" id="np2" minlength="12" required autocomplete="new-password"><div class="err" id="cerr"></div><div class="ok" id="cok"></div><button>Cambiar</button></form>
+  </div>
+</main></div>
+<script>
+const API="https://nlkltjywdupkqiwctzpr.supabase.co/functions/v1/admin-stats";
+const $=id=>document.getElementById(id);const usd=n=>"$"+(Number(n)||0).toFixed(4);
+const esc=s=>String(s??"—").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let charts=[];
+async function call(body){const r=await fetch(API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});const d=await r.json().catch(()=>({error:"Respuesta no válida"}));if(!r.ok)throw new Error(d.error||("Error "+r.status));return d;}
+async function load(){const pw=sessionStorage.getItem("adm_pw");if(!pw)return;try{render(await call({password:pw}));$("login").classList.add("hidden");$("app").classList.remove("hidden");}catch(e){sessionStorage.removeItem("adm_pw");$("app").classList.add("hidden");$("login").classList.remove("hidden");$("lerr").textContent=e.message;}}
+function table(el,cols,rows){el.innerHTML="<tr>"+cols.map(c=>"<th>"+c[0]+"</th>").join("")+"</tr>"+(rows.length?rows.map(r=>"<tr>"+cols.map(c=>"<td>"+esc(c[1](r))+"</td>").join("")+"</tr>").join(""):"<tr><td colspan="+cols.length+" class=muted>Sin datos todavía</td></tr>");}
+function render(d){const t=d.totals;
+$("kpis").innerHTML=[["Ganancia pagada (valued)",usd(t.revenue_valued)],["Ganancia total estimada",usd(t.revenue_total)],["Eventos",t.events],["Impresiones",t.impressions],["Clics",t.clicks],["Eventos pagados",t.valued_events],["Usuarios únicos",t.unique_telegram_ids]].map(k=>`<div class="card kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div></div>`).join("");
+$("gen").textContent="Actualizado: "+new Date(d.generated_at).toLocaleString("es-ES");
+charts.forEach(c=>c.destroy());charts=[];Chart.defaults.color="#aab";Chart.defaults.borderColor="#262b45";
+charts.push(new Chart($("cDay"),{data:{labels:d.per_day.map(x=>x.day.slice(5)),datasets:[{type:"bar",label:"Ganancia pagada ($)",data:d.per_day.map(x=>x.revenue_valued),backgroundColor:"#5b6cff",yAxisID:"y"},{type:"line",label:"Impresiones",data:d.per_day.map(x=>x.impressions),borderColor:"#6fe39a",yAxisID:"y1"}]},options:{scales:{y:{beginAtZero:true,position:"left"},y1:{beginAtZero:true,position:"right",grid:{drawOnChartArea:false}}}}}));
+const pie=(el,arr)=>charts.push(new Chart($(el),{type:"doughnut",data:{labels:arr.map(x=>x.key),datasets:[{data:arr.map(x=>x.events),backgroundColor:["#5b6cff","#6fe39a","#ffb44c","#ff6b8a","#4cc9ff"]}]}}));
+pie("cEv",d.per_event_type);pie("cRw",d.per_reward_event_type);
+table($("tZone"),[["Zona / subzona",r=>r.key],["Eventos",r=>r.events],["Impr.",r=>r.impressions],["Clics",r=>r.clicks],["Pagados",r=>r.valued],["Ganancia pagada",r=>usd(r.revenue_valued)],["Total",r=>usd(r.revenue_total)]],d.per_zone);
+table($("tLast"),[["Fecha",r=>new Date(r.created_at).toLocaleString("es-ES")],["Telegram",r=>r.telegram_id],["Evento",r=>r.event_type],["Recompensa",r=>r.reward_event_type],["Precio",r=>r.estimated_price==null?"—":usd(r.estimated_price)],["Zona",r=>r.zone_id],["Subzona",r=>r.sub_zone_id],["Ubicación",r=>r.request_var],["ymid",r=>r.ymid]],d.last_events);}
+$("lf").onsubmit=e=>{e.preventDefault();$("lerr").textContent="";sessionStorage.setItem("adm_pw",$("pw").value);$("pw").value="";load();};
+$("lo").onclick=()=>{sessionStorage.removeItem("adm_pw");location.reload();};$("rf").onclick=load;
+$("cf").onsubmit=async e=>{e.preventDefault();$("cerr").textContent=$("cok").textContent="";if($("np1").value!==$("np2").value){$("cerr").textContent="Las contraseñas nuevas no coinciden";return;}
+try{await call({password:$("cur").value,action:"change_password",new_password:$("np1").value});sessionStorage.setItem("adm_pw",$("np1").value);$("cf").reset();$("cok").textContent="Contraseña cambiada correctamente";}catch(err){$("cerr").textContent=err.message;}};
+load();
+</script>
+</body>
+</html>
