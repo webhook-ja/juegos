@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boxeo vs IA</title><style>
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;user-select:none;font-family:"Arial Black",Impact,sans-serif;color:#fff;background:radial-gradient(circle at 50% 40%,#4aa3ff,#1b3f8f)}
+.top{display:flex;justify-content:space-around;padding:10px}.pill{background:#14204a;border:3px solid #0b1230;border-radius:14px;padding:8px 16px;font-size:22px;box-shadow:0 4px 0 #0b1230}
+#ring{display:flex;justify-content:center;gap:10px;margin-top:10px}
+.f{position:relative}.f svg{width:280px;height:330px}
+.head{transition:transform .08s;transform-origin:140px 200px}.hit .head{transform:translateY(6px) rotate(-6deg) scale(.96)}
+.gl,.gr{transition:transform .09s}#me.pL .gl{transform:translate(160px,-110px) scale(1.3)}#me.pR .gr{transform:translate(40px,-110px) scale(1.3)}#ai.pL .gl{transform:translate(-40px,-110px) scale(1.3)}#ai.pR .gr{transform:translate(-160px,-110px) scale(1.3)}
+.guard .gl{transform:translate(25px,-120px)}.guard .gr{transform:translate(-25px,-120px)}
+.bruise{opacity:0;transition:opacity .2s}.b1 .bruise{opacity:.55}.b2 .bruise{opacity:.9}
+.x{display:none}.ko .x{display:inline}.ko .o{display:none}
+.pow{position:absolute;top:20px;left:50%;transform:translateX(-50%) scale(0) rotate(-10deg);font-size:46px;-webkit-text-stroke:3px #c1121f;text-shadow:0 5px 0 #c1121f;transition:transform .1s;pointer-events:none}
+.hit .pow{transform:translateX(-50%) scale(1) rotate(-10deg)}.blk .pow{transform:translateX(-50%) scale(.8);-webkit-text-stroke-color:#555;text-shadow:0 4px 0 #555}
+.name{text-align:center;font-size:20px}
+.zone{position:fixed;top:0;bottom:0;width:50%;z-index:1}#zl{left:0}#zr{right:0}
+.btns{position:fixed;bottom:16px;left:0;right:0;display:flex;justify-content:space-between;padding:0 18px;pointer-events:none;z-index:2}
+.btn{width:44%;max-width:260px;height:76px;border:4px solid #0b1230;border-radius:20px;font:inherit;font-size:22px;color:#fff;box-shadow:0 8px 0 #0b1230;display:flex;align-items:center;justify-content:center}
+#bl{background:linear-gradient(#ff5a6a,#d81e36)}#br{background:linear-gradient(#ffd84a,#f2a900)}
+#end{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:5;font-size:50px;color:#ffd23f;-webkit-text-stroke:2px #7a3b00;text-align:center}
+#end button{font:inherit;font-size:26px;margin-top:20px;padding:14px 36px;border-radius:18px;border:4px solid #0b1230;color:#fff;-webkit-text-stroke:0;background:linear-gradient(#7cf25a,#3fbf2a);box-shadow:0 7px 0 #0b1230;cursor:pointer}
+</style></head><body>
+<div class="top"><div class="pill">🔵 TÚ: <span id="s0">0</span></div><div class="pill">🎯 A 10</div><div class="pill">🔴 NEW BOT: <span id="s1">0</span></div></div>
+<div id="ring"></div>
+<div class="zone" id="zl"></div><div class="zone" id="zr"></div>
+<div class="btns"><div class="btn" id="bl">◀ IZQUIERDA</div><div class="btn" id="br">DERECHA ▶</div></div>
+<div id="end"><div id="et"></div><button id="rb">🔄 REINICIAR</button></div>
+<script>
+function fighter(id,body,hair,band,name){return `<div class="f" id="${id}"><svg viewBox="0 0 280 330">
+<ellipse cx="140" cy="318" rx="85" ry="10" fill="#0b1230" opacity=".4"/>
+<rect x="80" y="200" width="120" height="110" rx="16" fill="${body}"/><rect x="80" y="270" width="120" height="16" fill="#ffc93c"/>
+<g class="head"><rect x="60" y="30" width="160" height="165" rx="32" fill="#f4b183"/><rect x="60" y="30" width="160" height="42" rx="20" fill="${hair}"/><rect x="60" y="66" width="160" height="14" fill="${band}"/>
+<g class="o"><rect x="98" y="100" width="20" height="24" rx="6" fill="#1b1b1b"/><rect x="162" y="100" width="20" height="24" rx="6" fill="#1b1b1b"/></g>
+<g class="x" stroke="#1b1b1b" stroke-width="6" stroke-linecap="round"><path d="M98 102l20 20M118 102l-20 20M162 102l20 20M182 102l-20 20"/></g>
+<rect x="131" y="122" width="18" height="20" rx="8" fill="#e8946a"/>
+<ellipse class="bruise" cx="96" cy="146" rx="18" ry="12" fill="#7b2cbf"/><ellipse class="bruise" cx="184" cy="146" rx="18" ry="12" fill="#7b2cbf"/>
+<rect x="112" y="158" width="56" height="13" rx="6" fill="#1b1b1b"/></g>
+<g class="gl"><rect x="30" y="225" width="62" height="56" rx="22" fill="${band}"/></g><g class="gr"><rect x="188" y="225" width="62" height="56" rx="22" fill="${band}"/></g>
+</svg><div class="pow">¡POW!</div><div class="name">${name}</div></div>`}
+ring.innerHTML=fighter('me','#3a86ff','#3a2a1a','#1f6fd1','TÚ')+fighter('ai','#e63946','#222','#d81e36','NEW BOT');
+const F=[me,ai],sc=[0,0],WIN=10;let over=false,busy=[false,false],A,aiT;
+function tone(f1,f2,d,t){A=A||new AudioContext();const o=A.createOscillator(),g=A.createGain();o.type=t;o.frequency.setValueAtTime(f1,A.currentTime);o.frequency.exponentialRampToValueAtTime(f2,A.currentTime+d);g.gain.setValueAtTime(.22,A.currentTime);g.gain.exponentialRampToValueAtTime(.001,A.currentTime+d);o.connect(g).connect(A.destination);o.start();o.stop(A.currentTime+d)}
+function punch(p,side){if(over||busy[p])return;busy[p]=true;const a=F[p],d=F[1-p];a.classList.remove('guard');a.classList.add('p'+side);
+setTimeout(()=>{const blocked=d.classList.contains('guard');
+if(blocked){d.classList.add('blk');d.querySelector('.pow').textContent='¡BLOQ!';tone(300,250,.08,'triangle')}
+else{sc[p]++;document.getElementById('s'+p).textContent=sc[p];d.querySelector('.pow').textContent='¡POW!';d.classList.add('hit');tone(200,50,.15,'square');
+const n=sc[p];d.classList.toggle('b1',n>=3);d.classList.toggle('b2',n>=7);if(n>=WIN){d.classList.add('ko');finish(p)}}
+setTimeout(()=>{a.classList.remove('pL','pR');d.classList.remove('hit','blk');busy[p]=false},180)},90)}
+function finish(p){over=true;clearTimeout(aiT);tone(400,80,.7,'sawtooth');setTimeout(()=>{et.innerHTML=p==0?'¡GANASTE! 🏆':'¡GANA NEW BOT! 🤖';end.style.display='flex'},700)}
+function aiLoop(){if(over)return;aiT=setTimeout(()=>{const r=Math.random();
+if(r<.25){ai.classList.add('guard');setTimeout(()=>ai.classList.remove('guard'),500+Math.random()*500)}else punch(1,Math.random()<.5?'L':'R');aiLoop()},450+Math.random()*1100)}
+// player guard: hold down arrow or both sides
+onkeydown=e=>{if(e.repeat)return;if(e.key=='ArrowLeft')punch(0,'L');if(e.key=='ArrowRight')punch(0,'R');if(e.key=='ArrowDown'||e.key==' ')me.classList.add('guard')};
+onkeyup=e=>{if(e.key=='ArrowDown'||e.key==' ')me.classList.remove('guard')};
+zl.onpointerdown=()=>punch(0,'L');zr.onpointerdown=()=>punch(0,'R');
+rb.onclick=()=>{sc[0]=sc[1]=0;s0.textContent=s1.textContent=0;F.forEach(f=>f.className='f');over=false;busy=[false,false];end.style.display='none';aiLoop()};
+aiLoop();
+</script></body></html>
