@@ -52,7 +52,7 @@ body{min-height:var(--vh,100vh);align-items:flex-start;padding-top:52px}
 #turn{font-size:15px;color:#ffd23f}
 #menu{position:fixed;top:8px;left:8px;z-index:60;font-size:15px;padding:8px 14px;min-height:38px;text-decoration:none;color:#fff;background:linear-gradient(#ffd84a,#f2a900);border:3px solid #1a1c28;border-radius:14px;box-shadow:0 4px 0 #1a1c28;font-family:"Arial Black",sans-serif}
 </style></head><body>
-<a id="menu" href="./index.html">⬅ Menú</a>
+<a id="menu" href="#" onclick="showSplash();return false">⬅ Menú</a>
 <div id="wrap"><div id="board"><div id="center">
 <div id="vs"><div class="av" id="a0"><b>🧑</b><span>Tú</span><span id="ps0">🏁 SALIDA</span></div><div style="font-size:26px">VS</div><div class="av" id="a1"><b>🤖</b><span>New Bot</span><span id="ps1">🏁 SALIDA</span></div></div><div id="turn">Tu turno: pulsa TIRAR</div>
 <div class="pl" id="p0"><span>🔴 Tú</span><span>💰<span id="m0">1500</span> 🎟<span id="k0">0</span></span></div>
@@ -200,7 +200,7 @@ go.onclick=async()=>{if(busy)return;busy=true;if(await turn(0))return;await new 
 dice.onclick=()=>go.click();onresize=()=>{place(0);place(1)};setTimeout(onresize,50);
 </script><script>/* layout movil: escala y menu (sin tocar logica) */
 (function(){var tg=window.Telegram&&Telegram.WebApp;try{tg&&tg.expand()}catch(e){}
-try{if(tg&&tg.BackButton){tg.BackButton.show();tg.BackButton.onClick(function(){location.href='./index.html'})}}catch(e){}
+try{if(tg&&tg.BackButton){tg.BackButton.onClick(function(){showSplash()})}}catch(e){}
 var b=document.getElementById('board'),w=document.getElementById('wrap');
 function fit(){var vh=(tg&&tg.viewportStableHeight)||innerHeight;document.documentElement.style.setProperty('--vh',vh+'px');
 b.style.transform='none';var bw=b.offsetWidth,bh=b.offsetHeight;var s=Math.min((document.documentElement.clientWidth-8)/bw,(vh-112)/bh,1.4);
@@ -236,4 +236,24 @@ if(src[key].sync){if(last[key]!==undefined&&cur!==last[key])s(src[key].sync,g(sr
 if(src[key].label)parts.push(src[key].label+' <b>'+cur+'</b>')}
 bar.innerHTML=head+' · '+parts.concat(['🎟 total <b>'+g('vt_tokens')+'</b>','🪙 total <b>'+g('vt_coins')+'</b>']).join(' · ')}
 tick();setInterval(tick,250)})();</script>
+<style>#splash{position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer;
+background:radial-gradient(circle at 50% 35%,#ffe48a 0,#ffb938 30%,#ff7a3d 60%,#7b2cbf 100%);color:#1a1c28;text-align:center;padding:20px;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+#splash svg{width:min(62vw,260px);height:auto;filter:drop-shadow(0 10px 0 rgba(0,0,0,.25));animation:bob 2.4s ease-in-out infinite}
+#splash h1{margin:0;font:clamp(38px,12vw,64px) "Arial Black",sans-serif;color:#fff;-webkit-text-stroke:3px #1a1c28;text-shadow:0 6px 0 #1a1c28}
+#splash .tap{font:bold clamp(18px,5.5vw,24px) "Arial Black",sans-serif;color:#fff;background:#1a1c28;padding:10px 22px;border-radius:30px;animation:pulse 1.2s infinite}
+@keyframes bob{50%{transform:translateY(-10px) rotate(-2deg)}}@keyframes pulse{50%{transform:scale(1.08)}}</style>
+<div id="splash" onclick="enterBoard()">
+<svg viewBox="0 0 200 240" aria-label="Hombre con monóculo y pala">
+<rect x="150" y="40" width="8" height="150" rx="4" fill="#8b5a2b" stroke="#1a1c28" stroke-width="4"/><path d="M136 186h36l-6 40h-24z" fill="#b8c4cc" stroke="#1a1c28" stroke-width="5"/>
+<rect x="55" y="140" width="80" height="80" rx="20" fill="#3a86ff" stroke="#1a1c28" stroke-width="6"/><rect x="85" y="140" width="20" height="55" fill="#fff" stroke="#1a1c28" stroke-width="4"/><path d="M95 145l-6 12 6 30 6-30z" fill="#e63946"/>
+<circle cx="95" cy="95" r="52" fill="#ffd1a3" stroke="#1a1c28" stroke-width="6"/>
+<rect x="48" y="30" width="94" height="16" rx="6" fill="#1a1c28"/><rect x="62" y="0" width="66" height="40" rx="8" fill="#1a1c28"/><rect x="62" y="28" width="66" height="8" fill="#e63946"/>
+<path d="M65 120q30 22 60 0" fill="#7a4a1f" stroke="#1a1c28" stroke-width="4"/><path d="M78 128q17 10 34 0" fill="none" stroke="#1a1c28" stroke-width="4" stroke-linecap="round"/>
+<circle cx="76" cy="90" r="7" fill="#1a1c28"/><circle cx="115" cy="90" r="15" fill="#cfefff" fill-opacity=".6" stroke="#f2a900" stroke-width="5"/><circle cx="115" cy="90" r="6" fill="#1a1c28"/>
+<path d="M126 102q8 30-4 50" fill="none" stroke="#f2a900" stroke-width="3"/>
+<circle cx="150" cy="150" r="14" fill="#ffd1a3" stroke="#1a1c28" stroke-width="5"/></svg>
+<h1>Vending Town</h1><div class="tap">👆 Toca para jugar</div></div>
+<script>function showSplash(){document.getElementById('splash').style.display='flex';try{Telegram.WebApp.BackButton.hide()}catch(e){}}
+function enterBoard(){document.getElementById('splash').style.display='none';try{Telegram.WebApp.BackButton.show()}catch(e){}
+if(!window._inapp){window._inapp=1;try{ADS.inApp()}catch(e){}}try{dispatchEvent(new Event('resize'))}catch(e){}}</script>
 </body></html>
