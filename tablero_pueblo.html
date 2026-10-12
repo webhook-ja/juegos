@@ -67,7 +67,7 @@ body{min-height:var(--vh,100vh);align-items:flex-start;padding-top:52px}
 </div></div></div>
 <div id="mg"><div id="mgb"><div id="mgt"></div><div id="mgi"></div><div id="mga"></div><div id="mgr"></div></div></div>
 <div class="tok" id="t0"></div><div class="tok" id="t1"></div><div class="tok" id="t2" style="display:none"></div><div class="tok" id="t3" style="display:none"></div>
-<script src='minijuegos_party.js?v=20261012b'></script>
+<script src='minijuegos_party.js?v=20261012m'></script>
 <script>
 const HMUL=[1,2,3,4,6],houses={};
 const _S=(b)=>'<svg viewBox="0 0 64 64" width="38" height="38" style="filter:drop-shadow(0 3px 0 rgba(0,0,0,.25))">'+b+'</svg>';
@@ -706,7 +706,7 @@ button{font-family:'Cinzel Decorative',Georgia,serif!important;border-radius:16p
 #vtvolp{position:fixed;top:calc(54px + env(safe-area-inset-top,0px));right:8px;z-index:12000;display:none;background:var(--parch);border:3px solid #2a1a0e;border-radius:16px;padding:10px;font:14px 'MedievalSharp',serif;color:#2a1a0e;box-shadow:0 5px 0 #2a1a0e;gap:8px;align-items:center}
 #vtvolp input{width:120px;accent-color:#b9781a}
 </style>
-<button id="vtvol" type="button" aria-label="Sonido">🔊</button><div id="vtvolp"><span>🎵</span><input id="vtvolr" type="range" min="0" max="100"><button id="vtmute" type="button" style="font-size:12px;padding:6px 8px;min-height:0">Silenciar</button></div>
+<button id="vtvol" type="button" aria-label="Sonido">🔊</button><div id="vtvolp"><span>🔔 Efectos</span><input id="vtvolr" type="range" min="0" max="100"><button id="vtmute" type="button" style="font-size:12px;padding:6px 8px;min-height:0">Silenciar</button></div>
 <script>(function(){const b=document.getElementById('vtvol'),p=document.getElementById('vtvolp'),r=document.getElementById('vtvolr'),m=document.getElementById('vtmute');
 function ui(){const s=VTSND.get();r.value=Math.round(s.v*100);b.textContent=s.m||s.v==0?'🔇':'🔊';m.textContent=s.m?'Activar':'Silenciar'}
 b.onclick=()=>{p.style.display=p.style.display==='flex'?'none':'flex';ui()};r.oninput=()=>{VTSND.set(r.value/100);if(VTSND.get().m)VTSND.mute(false);ui()};m.onclick=()=>{VTSND.mute();ui()};ui()})();</script>
@@ -968,9 +968,9 @@ const xm=mkBus();bus.navidad=xm;const sf=C.createBiquadFilter();sf.type='lowpass
 [55,82.4].forEach((f,i)=>{const o=C.createOscillator(),g=C.createGain(),fl=C.createBiquadFilter();o.type='sawtooth';o.frequency.value=f;o.detune.value=i?7:-7;fl.type='lowpass';fl.frequency.value=300;lfo(fl.frequency,.05+i*.03,180,320);g.gain.value=.07;o.connect(fl).connect(g).connect(h);o.start()});
 let next=C.currentTime+.2,step=0;const JING=[659.3,659.3,659.3,0,659.3,659.3,659.3,0,659.3,784,523.3,587.3,659.3,0,0,0,698.5,698.5,698.5,698.5,698.5,659.3,659.3,659.3,659.3,587.3,587.3,659.3,587.3,0,784,0],LUTE=[293.7,349.2,440,523.3,440,349.2,392,329.6, 293.7,349.2,440,587.3,523.3,440,392,349.2],BOX=[659.3,622.3,659.3,493.9,587.3,523.3,440,0,261.6,329.6,440,493.9,0,329.6,415.3,493.9];
 timer=setInterval(()=>{if(!C||C.state!=='running')return;while(next<C.currentTime+.4){const th=cur;
-if(th==='fantasia'){const f=LUTE[step%16];pluck(bus.fantasia,f,next,.09);if(step%4===0)pluck(bus.fantasia,f/2,next,.06);if(Math.random()<.35)burst(bus.fantasia,next+R(0,.4),R(.02,.06),R(1500,3500),2,.12);next+=.42}
-else if(th==='navidad'){const f=JING[step%32];if(f){bell(bus.navidad,f,next,.06);bell(bus.navidad,f*2,next,.015)}if(step%2===0)for(let k=0;k<3;k++)burst(bus.navidad,next+k*.03,.05,R(6000,9000),6,.05);next+=.3}
-else{const f=BOX[step%16];if(f)bell(bus.halloween,f,next,.05);if(Math.random()<.04)burst(bus.halloween,next,R(.8,1.6),R(2200,3800),8,.05);if(Math.random()<.008)hoot(bus.halloween,next+.1,R(380,430));next+=.6}
+if(th==='fantasia'){const f=LUTE[step%16];if(!(window.MUSIC&&MUSIC.get().on)){pluck(bus.fantasia,f,next,.09);if(step%4===0)pluck(bus.fantasia,f/2,next,.06)}if(Math.random()<.35)burst(bus.fantasia,next+R(0,.4),R(.02,.06),R(1500,3500),2,.12);next+=.42}
+else if(th==='navidad'){const f=(window.MUSIC&&MUSIC.get().on)?0:JING[step%32];if(f){bell(bus.navidad,f,next,.06);bell(bus.navidad,f*2,next,.015)}if(step%2===0)for(let k=0;k<3;k++)burst(bus.navidad,next+k*.03,.05,R(6000,9000),6,.05);next+=.3}
+else{const f=(window.MUSIC&&MUSIC.get().on)?0:BOX[step%16];if(f)bell(bus.halloween,f,next,.05);if(Math.random()<.04)burst(bus.halloween,next,R(.8,1.6),R(2200,3800),8,.05);if(Math.random()<.008)hoot(bus.halloween,next+.1,R(380,430));next+=.6}
 step++}},100)}
 function fade(id){if(!C)return;cur=id;const t=C.currentTime;['fantasia','halloween','navidad'].forEach(k=>{if(!bus[k])return;const g=bus[k].gain;g.cancelScheduledValues(t);g.setValueAtTime(g.value,t);g.linearRampToValueAtTime(k===id?1:0,t+1.5)})}
 function level(){if(!M)return;const t=C.currentTime;M.gain.cancelScheduledValues(t);M.gain.setTargetAtTime(on?vol:0,t,.1)}
@@ -1184,4 +1184,5 @@ window.WZC={hit:(n,sayB)=>{if(won||window.__skipWZC)return false;hits=n;if(n>=3&
 block:()=>{if(armed&&!won){open();return true}return false}};
 })();</script>
 
+<script src="music.js?v=20261012m"></script>
 </body></html>
