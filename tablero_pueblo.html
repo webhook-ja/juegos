@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded',()=>{const m=document.getElementByI
 if(n===20){m.classList.add('egg');snd(523,.5);setTimeout(()=>snd(784,.6),200);confetti();if(!localStorage.getItem('vt_egg')){localStorage.setItem('vt_egg','1');localStorage.setItem('vt_coins',String((+localStorage.getItem('vt_coins')||0)+100));say('🎩 ¡Secreto descubierto! +100 de oro');try{window.dispatchEvent(new Event('storage'));window.updBar&&updBar()}catch(_){}}else say('🎩 ¡Ya conoces mi secreto!');setTimeout(()=>m.classList.remove('egg'),1300);n=0}
 else if(n>=15)say('¡'+(20-n)+' más y verás!');else if(window.WZC&&WZC.hit(n,say))0;else say(P[Math.floor(Math.random()*P.length)])})})})();
 function showSplash(){document.getElementById('splash').style.display='flex';try{Telegram.WebApp.BackButton.hide()}catch(e){}}
-function enterBoard(){if(window.WZC&&WZC.block())return;document.getElementById('splash').style.display='none';try{Telegram.WebApp.BackButton.show()}catch(e){}
+function enterBoard(){if(window.WZC&&WZC.block())return;if(window.LORE&&LORE.first()&&!window.__skipWZC){LORE.play(enterBoard);return}document.getElementById('splash').style.display='none';try{Telegram.WebApp.BackButton.show()}catch(e){}
 try{ROOM.enter()}catch(e){}if(!window._inapp){window._inapp=1;try{ADS.inApp()}catch(e){}}try{dispatchEvent(new Event('resize'))}catch(e){}}</script>
 <style>#vtbar{pointer-events:auto!important;cursor:pointer}
 #pan{position:fixed;inset:0;z-index:10000;background:rgba(10,12,30,.75);display:none;align-items:center;justify-content:center}
@@ -1184,5 +1184,31 @@ window.WZC={hit:(n,sayB)=>{if(won||window.__skipWZC)return false;hits=n;if(n>=3&
 block:()=>{if(armed&&!won){open();return true}return false}};
 })();</script>
 
+<style>#lore{position:fixed;inset:0;z-index:14000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,#2a1a0e,#0a0604);animation:lrin 1s}
+@keyframes lrin{from{opacity:0}}
+#lore .pg{position:relative;width:min(92vw,440px);height:min(80vh,620px);background:radial-gradient(circle at 30% 20%,#f8ecc8,#e6cf98 60%,#c9a866);border:4px solid #3a2414;border-radius:14px 22px 16px 20px;box-shadow:0 0 0 6px #6b4424,0 18px 50px #000;overflow:hidden}
+#lore svg.il{display:block;width:100%;height:30%;filter:url(#xmwob)}
+#lore .mask{position:absolute;left:0;right:0;top:30%;bottom:0;overflow:hidden;-webkit-mask:linear-gradient(transparent,#000 12%,#000 85%,transparent);mask:linear-gradient(transparent,#000 12%,#000 85%,transparent)}
+#lore .sc{position:absolute;left:8%;right:8%;top:100%;font:18px/1.5 'MedievalSharp',Georgia,serif;color:#2a1a0e;text-align:center;animation:lrsc linear forwards}
+#lore .sc p{margin:0 0 16px}#lore .sc p:first-child{font:22px 'Cinzel Decorative',Georgia,serif}
+@keyframes lrsc{to{transform:translateY(calc(-100% - 70vh))}}
+#lore .sk{position:absolute;right:14px;bottom:14px;z-index:2;font:14px "Arial Black",sans-serif;padding:8px 14px;border:3px solid #2a1a0e;border-radius:12px;background:#ffd76a;color:#2a1a0e;cursor:pointer}
+@media (prefers-reduced-motion:reduce){#lore .sc{animation:none;position:static;padding:10px}#lore .mask{overflow:auto;-webkit-mask:none;mask:none}}
+#splore{margin-top:4px;font:14px 'MedievalSharp',serif;padding:8px 14px;border:3px solid #2a1a0e;border-radius:14px;background:#e9d29a;color:#2a1a0e;cursor:pointer}</style>
+<script>(function(){const P='<p>Escuchad, viajeros, la leyenda de Vending Town.</p><p>Hubo un tiempo en que este reino florecía. Sus campos daban trigo dorado, sus tabernas rebosaban de canciones, y en lo alto de la colina se alzaba la torre del Mago Posadero, guardián de la luz del pueblo.</p><p>Una noche, el Rey subió los mil escalones de la torre. No venía a pedir consejo. Venía a pedir un filtro de amor, para doblegar un corazón que no le pertenecía.</p><p>El Mago lo miró largo rato, y respondió: El amor no se fabrica en un caldero, majestad. Lo que me pedís no es magia. Es una cadena.</p><p>El Rey, herido en su orgullo, lo acusó de herejía ante todo el reino, y envió a sus guardias a arrebatarle la torre.</p><p>Aquella misma noche, el Mago huyó entre la niebla, llevándose consigo la luz.</p><p>Y el reino comenzó a morir. Parcela a parcela. Se secaron los campos, se apagaron las tabernas, y el silencio cubrió las calles.</p><p>Pero dice la profecía que llegarán nuevos viajeros. Que tirarán los dados del destino, comprarán las tierras olvidadas, y devolverán la vida, casa a casa, al viejo pueblo.</p><p>Esos viajeros, sois vosotros.</p>';
+const IL='<svg class="il" viewBox="0 0 400 180" preserveAspectRatio="xMidYMid slice"><g stroke="#3a2414" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">'+
+'<path d="M0 150q60-30 120-12t120-8 160 4v50H0z" fill="#b89452"/><path d="M40 150l6-40 14-6 4 46M300 148l4-60 18-10 16 10 2 60" fill="#8a6a3a"/>'+
+'<path d="M180 150V50l20-14 20 14v100" fill="#a8885a"/><path d="M172 54l28-34 28 34z" fill="#6b4424"/><rect x="194" y="70" width="12" height="16" fill="#ffd96a"/>'+
+'<path d="M80 40q8-14 16 0l6-10 6 10q8-14 16 0l-4 12h-36z" fill="#e8c23a"/><circle cx="330" cy="40" r="18" fill="#f8ecc8"/><path d="M250 60q20-6 30 6q-14 2-20 14" stroke-width="2.5"/>'+
+'<path d="M120 128q10-20 18-2M240 130q10-18 18 0" stroke-width="2"/></g></svg>';
+let a=null,o=null,done=null;
+function close(){if(!o)return;try{a&&a.pause()}catch(e){}try{MUSIC.duck(false)}catch(e){}o.remove();o=null;localStorage.setItem('vt_lore','1');const d=done;done=null;d&&d()}
+window.LORE={play:cb=>{if(o)return;done=cb;o=document.createElement('div');o.id='lore';o.innerHTML='<div class="pg">'+IL+'<div class="mask"><div class="sc">'+P+'</div></div></div><button class="sk" type="button">Saltar ⏭</button>';document.body.appendChild(o);
+o.querySelector('.sk').onclick=e=>{e.stopPropagation();close()};o.querySelector('.sc').style.animationDuration='84s';
+try{MUSIC.duck(true)}catch(e){}a=new Audio('leyenda.mp3?v=1');a.volume=Math.min(1,(window.VOL??0.7)*1.2);a.muted=!(window.VOL>0);a.onended=()=>setTimeout(close,1500);a.play().catch(()=>{});
+setTimeout(()=>{if(o)close()},90000)},first:()=>!localStorage.getItem('vt_lore')};
+document.addEventListener('visibilitychange',()=>{if(a&&o){document.hidden?a.pause():a.play().catch(()=>{})}});
+const sp=document.getElementById('spgo');if(sp){const b=document.createElement('button');b.id='splore';b.type='button';b.textContent='📜 Leyenda';b.onclick=e=>{e.stopPropagation();LORE.play()};sp.insertAdjacentElement('afterend',b)}
+})();</script>
 <script src="music.js?v=20261012m"></script>
 </body></html>
