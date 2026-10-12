@@ -67,7 +67,7 @@ body{min-height:var(--vh,100vh);align-items:flex-start;padding-top:52px}
 </div></div></div>
 <div id="mg"><div id="mgb"><div id="mgt"></div><div id="mgi"></div><div id="mga"></div><div id="mgr"></div></div></div>
 <div class="tok" id="t0"></div><div class="tok" id="t1"></div><div class="tok" id="t2" style="display:none"></div><div class="tok" id="t3" style="display:none"></div>
-<script src='minijuegos_party.js?v=20261012t'></script>
+<script src='minijuegos_party.js?v=20261012f'></script>
 <script>
 const HMUL=[1,2,3,4,6],houses={};
 const _S=(b)=>'<svg viewBox="0 0 64 64" width="38" height="38" style="filter:drop-shadow(0 3px 0 rgba(0,0,0,.25))">'+b+'</svg>';
@@ -597,8 +597,8 @@ function applyArrays(st){const lm=[],lt=[],lp=[];for(let i=0;i<S;i++){const g=G(
 money.length=0;money.push(...lm);tok.length=0;tok.push(...lt);pos.length=0;pos.push(...lp);
 Object.keys(own).forEach(k=>delete own[k]);Object.entries(st.own||{}).forEach(([k,v])=>own[k]=L(+v));
 Object.keys(houses).forEach(k=>delete houses[k]);Object.entries(st.houses||{}).forEach(([k,v])=>houses[k]=+v);els.forEach((_,i)=>drawHouses(i));labels()}
-function players(){try{const D=TOKS.ids,used=[];const L=[];for(let i=0;i<S;i++){const p=row.players[G(i)]||{};let t=p.token;if(!D.includes(t)||used.includes(t))t=D.find(x=>!used.includes(x));used.push(t);L.push(t)}TOKAPPLY(L)}catch(e){}const P=$('plist');if(!P)return;P.innerHTML='';for(let i=0;i<S;i++){const g=G(i),p=row.players[g],d=document.createElement('div');d.className='pc'+(row.turn===g?' on':'');d.style.borderColor=COLS[g];
-d.innerHTML='<b class="vfig" data-c="'+COLS[g]+'" data-f="'+(i?'🙂':'😎')+'"'+(((window.AV&&AV.get(p.id))||p.avatar)?' data-ph="'+esc((window.AV&&AV.get(p.id))||p.avatar)+'"':'')+'></b><div class="pn">'+(online[p.id]?'🟢 ':'⚪ ')+esc(i?p.name:'Tú')+'</div><div class="pm">💰<span id="m'+i+'">'+money[i]+'</span> 🎟<span id="k'+i+'">'+tok[i]+'</span></div><div class="ps">'+T[pos[i]][1]+' '+esc(T[pos[i]][2])+'</div>';
+function players(){try{const D=TOKS.ids,used=[];const L=[];for(let i=0;i<S;i++){const p=row.players[G(i)]||{};let t=p.token;if(!D.includes(t)||used.includes(t))t=D.find(x=>!used.includes(x));used.push(t);L.push(t)}TOKAPPLY(L);window.__PTK=L}catch(e){}const P=$('plist');if(!P)return;P.innerHTML='';for(let i=0;i<S;i++){const g=G(i),p=row.players[g],d=document.createElement('div');d.className='pc'+(row.turn===g?' on':'');d.style.borderColor=COLS[g];
+d.innerHTML='<b class="vfig" data-c="'+COLS[g]+'" data-f="'+(i?'🙂':'😎')+'"'+(((window.AV&&AV.get(p.id))||p.avatar)?' data-ph="'+esc((window.AV&&AV.get(p.id))||p.avatar)+'"':'')+'></b><div class="pn"><i class="ptk">'+((window.__PTK&&window.TOKS)?TOKS.svg(__PTK[i]):'')+'</i>'+(online[p.id]?'🟢 ':'⚪ ')+esc(i?p.name:'Tú')+'</div><div class="pm">💰<span id="m'+i+'">'+money[i]+'</span> 🎟<span id="k'+i+'">'+tok[i]+'</span></div><div class="ps">'+T[pos[i]][1]+' '+esc(T[pos[i]][2])+'</div>';
 if(i&&window.VT_CHAT)d.onclick=()=>VT_CHAT.openTo(+p.id);P.appendChild(d);vfig(d.querySelector('.vfig'))}
 for(let k=0;k<4;k++){const t=$('t'+k);if(!t)continue;t.style.display=k<S?'':'none';if(k<S)t.style.background=COLS[G(k)]}
 const mine=row.turn===mySeat;$('turn').textContent=row.state.solo?(row.status==='over'?'🏁 Fin: '+(row.state.score??money[0])+' 🪙'+(row.state.won?' · ¡Meta lograda!':''):'🧭 Ronda '+((row.state.turns||0)+1)+'/'+(row.state.maxTurns||20)+' · Meta '+(row.state.target||3000)+' 🪙'):row.status==='over'?'🏆 ¡Fin! Gana '+esc(row.players[row.state.winner]?.name||'?'):mine?'Tu turno: pulsa TIRAR':'Turno de '+row.players[row.turn].name+'...';
@@ -884,7 +884,7 @@ if(T===6)o+='<ellipse cx="50" cy="22" rx="18" ry="12" fill="#ff8a1f" '+k+'/><pat
 return o+'</svg>'}
 const url=d=>'data:image/svg+xml;utf8,'+encodeURIComponent(svg(d));const cache={};
 let mine=null;try{mine=JSON.parse(localStorage.getItem('vt_avatar')||'null')}catch(e){}
-window.AV={svg,url,mine:()=>mine?url(mine):null,get:id=>+id===+me&&mine?url(mine):(cache[id]?url(cache[id]):null),
+window.AV={svg,url,raw:id=>(+id===+me?mine:cache[id])||null,drop:ids=>(ids||[]).forEach(x=>{if(+x!==+me)delete cache[x]}),putx:x=>{mine=Object.assign({},mine||{skin:0,eyes:0,mouth:0,hair:1,hat:2,cloak:0,gear:1,bg:0},x);localStorage.setItem('vt_avatar',JSON.stringify(mine));const data={};for(const k in mine)data[k]=String(mine[k]);return fetch(FN,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'save',initData:(tg&&tg.initData)||'',tg_id:me,data})}).catch(()=>{})},mine:()=>mine?url(mine):null,get:id=>+id===+me&&mine?url(mine):(cache[id]?url(cache[id]):null),
 load:ids=>{ids=(ids||[]).map(Number).filter(x=>x&&!(x in cache));if(!ids.length)return Promise.resolve();ids.forEach(x=>cache[x]=cache[x]||null);
 return fetch(FN,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'get',ids})}).then(r=>r.json()).then(r=>{Object.entries((r&&r.avatars)||{}).forEach(([k,v])=>{if(v&&v.data)cache[k]=v.data});try{window.ROOM&&ROOM.refresh&&ROOM.refresh()}catch(e){}}).catch(()=>{})},open};
 if(me&&!mine)AV.load([me]).then(()=>{if(cache[me]){mine=cache[me];localStorage.setItem('vt_avatar',JSON.stringify(mine))}});
@@ -1250,7 +1250,7 @@ const IDS=Object.keys(T);window.TOKS={ids:IDS,svg:id=>(T[id]||T.mago)[1],name:id
 window.TOKPICK=(cb,opt)=>{opt=opt||{};const taken=opt.taken||[];let sel=TOKS.get();if(!sel||taken.includes(sel))sel=IDS.find(i=>!taken.includes(i));
 const o=document.createElement('div');o.id='tkp';o.innerHTML='<div class="bx"><h3>'+(opt.title||'Elige tu ficha')+'</h3><div class="g">'+IDS.map(i=>'<button type="button" class="tk'+(i===sel?' on':'')+'" data-i="'+i+'"'+(taken.includes(i)?' disabled':'')+'>'+T[i][1]+T[i][0]+'</button>').join('')+'</div><button type="button" class="ok">Soy yo ✔</button></div>';
 (opt.parent||document.body).appendChild(o);o.querySelectorAll('.tk').forEach(b=>b.onclick=()=>{sel=b.dataset.i;o.querySelectorAll('.tk').forEach(x=>x.classList.toggle('on',x===b))});
-o.querySelector('.ok').onclick=e=>{e.stopPropagation();localStorage.setItem('vt_token',sel);o.remove();cb&&cb(sel)}};
+o.querySelector('.ok').onclick=e=>{e.stopPropagation();localStorage.setItem('vt_token',sel);try{AV.putx({token:sel})}catch(_){}o.remove();cb&&cb(sel)}};
 /* antes de crear partida (solo o sala nueva), pedir ficha */
 let pass=false;document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#lbSolo,#lbNew');if(!b||pass)return;e.stopImmediatePropagation();e.preventDefault();TOKPICK(()=>{pass=true;b.click();pass=false})},true);
 /* fichas en el tablero: cada jugador con la ficha elegida (o asignada) */
@@ -1311,7 +1311,7 @@ setInterval(()=>{const h=document.getElementById('helpb');if(h&&h.offsetParent&&
 .dn-pose{animation:dnp 2s ease-in-out infinite}@keyframes dnp{0%,100%{transform:none;filter:none}40%,70%{transform:scale(1.12) rotate(-4deg);filter:drop-shadow(0 0 10px #7fe3ff)}}
 .dn-siesta{animation:dnz 3s ease-in-out infinite}@keyframes dnz{50%{transform:rotate(-14deg) translateY(4px) scaleY(.95)}}
 @media (prefers-reduced-motion:reduce){#lbav .fig{animation:none!important}}</style>
-<div id="lbav"><span class="emo">💬</span><div class="fig dn-idle"></div><button type="button" id="dnb">💃 Bailes</button></div>
+<div id="lbav"><span class="emo">💬</span><div class="fig dn-idle"></div><button type="button" id="dnb">💃 Bailes</button><button type="button" id="amgb">👥 Amigos</button></div>
 <script>(function(){
 const D={idle:['Reposo',0],saludo:['Saludo',50],balanceo:['Balanceo',60],baile:['Baile del pueblo',150],giro:['Giro',80],saltitos:['Saltitos',70],pose:['Pose de mago',120],siesta:['Siesta',50]};
 const CAP=10,EXTRA=30,DAY=864e5;
@@ -1320,7 +1320,7 @@ const coins=()=>+localStorage.getItem('vt_coins')||0,pay=n=>{if(coins()<n)return
 let cur=localStorage.getItem('vt_dance')||'idle';
 const el=document.getElementById('lbav'),fig=el.querySelector('.fig');
 function ok(id){if(id==='idle')return true;const r=J()[id];return r&&r.until>Date.now()&&r.plays<CAP}
-function set(id){if(!ok(id))id='idle';cur=id;localStorage.setItem('vt_dance',id);fig.className='fig dn-'+id}
+let sv=0;function set(id){if(!ok(id))id='idle';const ch=id!==cur;cur=id;localStorage.setItem('vt_dance',id);fig.className='fig dn-'+id;if(ch){clearTimeout(sv);sv=setTimeout(()=>{try{AV.putx({dance:id})}catch(e){}},1500)}}
 fig.addEventListener('animationiteration',()=>{if(cur==='idle')return;const o=J(),r=o[cur];if(!r)return set('idle');r.plays++;SV(o);if(r.plays>=CAP){const id=cur;set('idle');cap(id)}});
 function cap(id){const n=D[id][1],hasAd=!!(window.ADS&&ADS.reward&&window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData);
  VTDLG('<h3>💃 '+D[id][0]+'</h3><p>Tu avatar se ha cansado.'+(hasAd?' Mira un anuncio para seguir bailando, o paga '+EXTRA+' monedas.':' Paga '+EXTRA+' monedas para seguir bailando.')+'</p>',[['Ahora no',null,'sec'],...(hasAd?[['📺 Ver anuncio',async()=>{const prev=window.VT_GAME;window.VT_GAME='baile';let v=false;try{v=await ADS.reward('dance')}catch(e){}window.VT_GAME=prev;if(v){const o=J();if(o[id]){o[id].plays=0;SV(o)}set(id)}}]]:[]),['🪙 Pagar '+EXTRA,()=>{if(pay(EXTRA)){const o=J();if(o[id]){o[id].plays=0;SV(o)}set(id)}else VTDLG('<p>No tienes monedas suficientes.</p>',[['Vale']])}]])}
@@ -1328,14 +1328,45 @@ function picker(){let p=document.getElementById('dnp');if(p){p.remove();return}p
  p.innerHTML='<b>💃 Bailes</b> <small>(alquiler 24 h · 🪙 '+coins()+')</small>'+Object.keys(D).map(k=>{const r=o[k],act=k==='idle'||(r&&r.until>Date.now());return '<div class="r"><span>'+D[k][0]+(act&&k!=='idle'?' <small>⏳ '+Math.ceil((r.until-Date.now())/36e5)+' h · '+(CAP-r.plays)+' usos</small>':'')+'</span><button type="button" data-k="'+k+'" class="'+(cur===k?'on':'')+'">'+(act?(cur===k?'Bailando':'Usar'):'🪙 '+D[k][1])+'</button></div>'}).join('');document.body.appendChild(p);
  p.querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=b.dataset.k,r=J()[k];if(k==='idle'||(r&&r.until>Date.now())){if(r&&r.plays>=CAP){p.remove();return cap(k)}set(k);p.remove();return}
   VTDLG('<h3>💃 '+D[k][0]+'</h3><p>¿Alquilar este baile 24 horas por <b>'+D[k][1]+'</b> monedas?</p>',[['Cancelar',null,'sec'],['Alquilar',()=>{if(!pay(D[k][1]))return VTDLG('<p>No tienes monedas suficientes.</p>',[['Vale']]);const o=J();o[k]={until:Date.now()+DAY,plays:0};SV(o);set(k)}]])})}
-document.getElementById('dnb').onclick=picker;
+document.getElementById('dnb').onclick=picker;document.getElementById('amgb').onclick=()=>{try{AMIGOS.toggle()}catch(e){}};
 function face(){let u=null;try{u=AV.mine()}catch(e){}const h=u?'<img src="'+u+'" alt="">':(window.TOKS?TOKS.svg(TOKS.get()||'mago'):'');if(fig.dataset.h!==h){fig.dataset.h=h;fig.innerHTML=h}}
-setInterval(()=>{const lb=document.getElementById('lobby');const v=lb&&getComputedStyle(lb).display!=='none';el.style.display=v?'flex':'none';if(!v){const p=document.getElementById('dnp');p&&p.remove()}else face()},700);
+setInterval(()=>{const lb=document.getElementById('lobby');const v=lb&&getComputedStyle(lb).display!=='none';const tp=document.getElementById('tip'),tipOn=tp&&getComputedStyle(tp).display!=='none';el.style.display=v&&!tipOn?'flex':'none';if(!v){const p=document.getElementById('dnp');p&&p.remove()}else face()},700);
 set(cur);
 /* emote al enviar un mensaje */
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#chats')){const m=el.querySelector('.emo');m.textContent=['💬','😄','👋','🎉','😂'][Math.floor(Math.random()*5)];m.classList.remove('on');void m.offsetWidth;m.classList.add('on');setTimeout(()=>m.classList.remove('on'),1400)}},true);
 })();</script>
 
+<!-- ===== Amigos del pueblo: chat con jugadores con los que ya has jugado ===== -->
+<style>#amgb{min-height:44px}#amg{position:fixed;right:8px;left:auto;bottom:calc(var(--bot,0px) + 66px);z-index:10004;width:min(94vw,360px);max-height:min(70vh,520px);display:none;flex-direction:column;background:rgba(27,31,58,.96);color:#fff;border:3px solid #f4e9c8;border-radius:16px;box-shadow:0 0 0 3px #1a1c28;font:13px Arial,sans-serif;overflow:hidden}
+#amg header{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(0,0,0,.3);font:15px 'MedievalSharp',serif}#amg header button{min-height:40px;min-width:40px;border-radius:10px;border:2px solid #f4e9c8;background:#3b3f55;color:#fff}
+#amg .fl{display:flex;gap:8px;overflow-x:auto;padding:8px;border-bottom:1px solid rgba(255,255,255,.15);min-height:96px}
+#amg .fr{flex:0 0 72px;text-align:center;font-size:11px;position:relative}#amg .fr .fig{width:52px;height:60px;margin:0 auto;transform-origin:50% 100%}#amg .fr .fig img,#amg .fr .fig svg{width:100%;height:100%;object-fit:contain}
+#amg .fr .dot{position:absolute;top:2px;right:8px;width:10px;height:10px;border-radius:50%;background:#888;border:2px solid #1a1c28}#amg .fr .dot.on{background:#7cf25a}
+#amg .fr button{min-height:30px;font-size:10px;border-radius:8px;border:1px solid #f4e9c8;background:#555a7a;color:#fff;margin-top:2px}#amg .fr.bl{opacity:.45}
+#amg .ms{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px;min-height:120px}#amg .m{background:rgba(255,255,255,.08);border-radius:10px;padding:4px 8px}#amg .m b{color:#ffd76a}
+#amg form{display:flex;gap:6px;padding:8px}#amg input{flex:1;min-height:44px;border-radius:10px;border:2px solid #f4e9c8;padding:0 8px;font-size:15px}#amg form button{min-height:44px;min-width:56px;border-radius:10px;border:2px solid #1a1c28;background:#ffd76a;font:14px "Arial Black",sans-serif}
+#amg .em{opacity:.7;padding:10px;text-align:center}</style>
+<div id="amg"><header><b>👥 Amigos del pueblo</b><button type="button" id="amgx" aria-label="Cerrar">✕</button></header><div class="fl"></div><div class="ms"></div><form id="amgf"><input id="amgi" maxlength="300" placeholder="Escribe a tus amigos…" autocomplete="off"><button id="amgs" type="submit">Enviar</button></form></div>
+<script>(function(){
+const FN='https://nlkltjywdupkqiwctzpr.supabase.co/functions/v1/chat',tg=window.Telegram&&Telegram.WebApp;let u={};try{u=tg.initDataUnsafe.user||{}}catch(e){}
+const me=u.id||+localStorage.getItem('vt_web_id');
+const call=o=>fetch(FN,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({initData:(tg&&tg.initData)||'',tg_id:me,name:u.first_name||'Jugador',avatar:u.photo_url||''},o))}).then(r=>r.json()).catch(()=>({error:'red'}));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P=document.getElementById('amg'),FL=P.querySelector('.fl'),MS=P.querySelector('.ms');let open=false,timer=null,fr=[];
+function fig(id){let h='';try{const a=AV.get(id);if(a)h='<img src="'+a+'" alt="">'}catch(e){}const r=(window.AV&&AV.raw&&AV.raw(id))||{};if(!h&&window.TOKS)h=TOKS.svg(r.token||'mago');return '<div class="fig dn-'+esc(/^[a-z]{2,12}$/.test(r.dance||'')?r.dance:'idle')+'">'+h+'</div>'}
+function drawF(){FL.innerHTML=fr.length?fr.map(f=>'<div class="fr'+(f.blocked?' bl':'')+'"><i class="dot'+(f.online?' on':'')+'"></i>'+fig(f.id)+'<div>'+esc(f.name)+'</div><button type="button" data-b="'+f.id+'" data-x="'+(f.blocked?'unblock':'block')+'">'+(f.blocked?'Desbloquear':'Bloquear')+'</button></div>').join(''):'<div class="em">Aún no tienes amigos del pueblo. Juega una partida en sala y los jugadores aparecerán aquí.</div>';
+FL.querySelectorAll('button').forEach(b=>b.onclick=async()=>{if(b.dataset.x==='block'&&!confirm('¿Bloquear a este jugador? No verás sus mensajes ni él los tuyos.'))return;await call({action:b.dataset.x,target:+b.dataset.b});load()})}
+async function load(){const r=await call({action:'friends'});if(r.ok){fr=r.friends||[];try{AV.drop&&AV.drop(fr.map(f=>f.id));await AV.load(fr.map(f=>f.id))}catch(e){}drawF()}const m=await call({scope:'amigos',action:'read'});if(m.ok){const at=MS.scrollTop+MS.clientHeight>=MS.scrollHeight-20;MS.innerHTML=(m.messages||[]).map(x=>'<div class="m"><b>'+esc(+x.telegram_id===+me?'Tú':x.player_name)+':</b> '+esc(x.message)+'</div>').join('')||'<div class="em">Sin mensajes en las últimas 24 h.</div>';if(at)MS.scrollTop=MS.scrollHeight}}
+function show(v){open=v;P.style.display=v?'flex':'none';clearInterval(timer);if(v){load();timer=setInterval(()=>{if(!document.hidden)load()},6000)}}
+document.getElementById('amgx').onclick=()=>show(false);
+document.getElementById('amgf').onsubmit=async e=>{e.preventDefault();const i=document.getElementById('amgi'),t=i.value.trim();if(!t)return;i.value='';const r=await call({scope:'amigos',message:t});if(r.error==='no friends')MS.insertAdjacentHTML('beforeend','<div class="em">Necesitas haber jugado con alguien para escribir aquí.</div>');else if(r.error==='slow down')i.value=t;load();try{const m=document.querySelector('#lbav .emo');m.textContent='💬';m.classList.remove('on');void m.offsetWidth;m.classList.add('on');setTimeout(()=>m.classList.remove('on'),1400)}catch(_){}};
+window.AMIGOS={toggle:()=>show(!open),close:()=>show(false)};
+/* presencia: aviso al servidor cada 45 s mientras la app está visible */
+const ping=()=>{if(!document.hidden&&me)call({action:'ping'})};ping();setInterval(ping,45000);document.addEventListener('visibilitychange',ping);
+setInterval(()=>{const lb=document.getElementById('lobby');if(open&&!(lb&&getComputedStyle(lb).display!=='none'))show(false)},1000);
+})();</script>
+
+<style>.pn .ptk{display:inline-block;width:20px;height:24px;vertical-align:middle;margin-right:2px}.pn .ptk svg{width:100%;height:100%}</style>
 <style id="layout-fix">
 :root{--envt:env(safe-area-inset-top,0px);--top:max(var(--sat,0px),env(safe-area-inset-top,0px));--bot:max(var(--sab,0px),env(safe-area-inset-bottom,0px))}
 body{padding-top:calc(var(--top) + 60px)!important}
@@ -1357,5 +1388,5 @@ body{padding-top:calc(var(--top) + 60px)!important}
 .th-navidad #menu,.th-navidad #vthelp,.th-navidad #vtvol{border-color:#fff!important;box-shadow:0 3px 0 #0b1e38,0 0 0 2px #d6303a!important}
 .th-halloween #vtquit{border-color:#ff8a1f!important}.th-navidad #vtquit{border-color:#fff!important}
 </style>
-<script src="music.js?v=20261012t"></script>
+<script src="music.js?v=20261012f"></script>
 </body></html>
