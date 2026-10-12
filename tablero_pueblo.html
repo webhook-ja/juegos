@@ -178,7 +178,7 @@ cleanup();res.textContent=w?'¡GANA! +200 +2🎟 🏆':'PIERDE -100 😵';snd(w?
 return{play}})();
 
 let busy=false;
-async function turn(p){const n=1+Math.floor(Math.random()*6);dice.classList.remove('roll');void dice.offsetWidth;dice.classList.add('roll');dice.textContent='⚀⚁⚂⚃⚄⚅'[n-1];
+async function turn(p){const n=1+Math.floor(Math.random()*12);dice.classList.remove('roll');void dice.offsetWidth;dice.classList.add('roll');for(let k=0;k<8;k++){dice.textContent=1+Math.floor(Math.random()*12);await new Promise(r=>setTimeout(r,45))}dice.textContent=n;
 for(let i=0;i<n;i++){pos[p]=(pos[p]+1)%N;if(pos[p]==0){money[p]+=200;tok[p]++;upd();snd(1200,.2)}place(p);snd(500+i*80,.08);await new Promise(r=>setTimeout(r,260))}
 const t=T[pos[p]],who=p?"New Bot":"Tú";let m=who+' cae en '+t[2]+'. ';
 if(t[3]){if(own[pos[p]]===undefined){let tk=false;const can=money[p]>=t[3]&&(p==0?confirm('¿Comprar '+t[2]+' por '+t[3]+'?'):money[p]-t[3]>=300);if(!can&&money[p]<t[3]&&tok[p]>=(p?2:1)&&(p==0?confirm('No te llega. ¿Comprar '+t[2]+' con 1 🎟 + todo tu dinero ('+money[p]+')?'):true))tk=true;if(can||tk){if(tk){tok[p]--;money[p]=0;m+='(con 🎟) '}else money[p]-=t[3];own[pos[p]]=p;els[pos[p]].classList.add("own"+p);els[pos[p]].querySelector("small").innerHTML+="<br>"+(p?"🔵 New Bot":"🔴 Tuya");m+='¡Comprada!';snd(900,.3)}}
@@ -256,4 +256,37 @@ background:radial-gradient(circle at 50% 35%,#ffe48a 0,#ffb938 30%,#ff7a3d 60%,#
 <script>function showSplash(){document.getElementById('splash').style.display='flex';try{Telegram.WebApp.BackButton.hide()}catch(e){}}
 function enterBoard(){document.getElementById('splash').style.display='none';try{Telegram.WebApp.BackButton.show()}catch(e){}
 if(!window._inapp){window._inapp=1;try{ADS.inApp()}catch(e){}}try{dispatchEvent(new Event('resize'))}catch(e){}}</script>
+<style>#vtbar{pointer-events:auto!important;cursor:pointer}
+#pan{position:fixed;inset:0;z-index:10000;background:rgba(10,12,30,.75);display:none;align-items:center;justify-content:center}
+#panb{background:#3b3f55;color:#fff;border:5px solid #1a1c28;border-radius:22px;box-shadow:0 8px 0 #1a1c28;width:min(94vw,460px);max-height:86vh;overflow:auto;padding:14px;font-family:Arial;font-weight:bold}
+#panb h2{margin:4px 0 8px;font:22px "Arial Black",sans-serif}#panb h3{margin:12px 0 6px;font:16px "Arial Black",sans-serif;color:#ffd23f}
+#panb .row{display:flex;justify-content:space-between;gap:8px;background:#262838;border-radius:10px;padding:6px 10px;margin:4px 0;font-size:13px}
+#panb .st{display:flex;gap:8px}#panb .st div{flex:1;background:#14204a;border-radius:12px;padding:8px;text-align:center;font-size:12px}#panb .st b{display:block;font-size:22px;color:#ffd23f}
+#panb button{font-size:15px;padding:8px 16px;min-height:40px}</style>
+<div id="pan" onclick="if(event.target===this)this.style.display='none'"><div id="panb"></div></div>
+<script>/* panel de usuario, historial y referidos */
+(function(){const BOT_USERNAME='TableroPueblo_bot',API='https://nlkltjywdupkqiwctzpr.supabase.co/functions/v1/referrals';
+const tg=window.Telegram&&Telegram.WebApp,init=(tg&&tg.initData)||'';let user={};try{user=(tg.initDataUnsafe||{}).user||{}}catch(e){}
+const L=(k)=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}},S=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v.slice(-200)))}catch(e){}};
+const esc=t=>String(t).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+function api(body){if(!user.id)return Promise.resolve(null);return fetch(API,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({initData:init,tg_id:user.id},body))}).then(r=>r.json()).catch(()=>null)}
+// registrar referido
+try{const sp=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.start_param;if(sp&&/^ref_\d+$/.test(sp)&&!localStorage.getItem('vt_ref_done')){api({action:'register',start_param:sp}).then(r=>{if(r&&r.ok)localStorage.setItem('vt_ref_done','1')})}}catch(e){}
+// historial de puntos (cambios de dinero/tokens del jugador, motivo = mensaje)
+let lm=money[0],lt=tok[0];new MutationObserver(()=>{const dm=money[0]-lm,dt=tok[0]-lt;lm=money[0];lt=tok[0];if(dm||dt){const h=L('vt_hist');h.push({d:Date.now(),m:dm,t:dt,r:msg.textContent});S('vt_hist',h)}}).observe(msg,{childList:true,characterData:true,subtree:true});
+// historial de minijuegos
+const orig=MG.play;MG.play=async function(name,p,tk){const r=await orig.apply(this,arguments);const g=L('vt_games');g.push({d:Date.now(),who:p?'New Bot':'Tú',opp:p?'Tú':'New Bot',mg:name,w:!!r.w});S('vt_games',g);
+if(!p&&r.w)api({action:'report',points:r.dbl?400:200});return r};
+window.openPanel=function(){const g=L('vt_games'),h=L('vt_hist'),mine=g.filter(x=>x.who=='Tú'),W=mine.filter(x=>x.w).length;const B=document.getElementById('panb');
+const link='https://t.me/'+BOT_USERNAME+'?startapp=ref_'+(user.id||'');
+B.innerHTML='<h2>👤 '+esc(user.first_name||'Jugador')+'</h2><div class="st"><div><b>'+W+'</b>Victorias</div><div><b>'+(mine.length-W)+'</b>Derrotas</div><div><b id="rc">–</b>Referidos</div><div><b id="re">–</b>Premio ref.</div></div>'+
+'<h3>🤝 Invitar amigos</h3>'+(user.id?'<div class="row" style="word-break:break-all">'+esc(link)+'</div><button id="inv">📨 INVITAR</button> <button id="cp">📋 COPIAR</button><div style="font-size:12px;margin-top:4px">Ganas el 10% de los puntos que consigan tus invitados.</div>':'<div class="row">Abre el juego desde Telegram para invitar amigos.</div>')+
+'<h3>🎮 Historial de minijuegos</h3>'+(g.slice(-30).reverse().map(x=>'<div class="row"><span>'+(x.w?'✅':'❌')+' '+esc(x.who)+' vs '+esc(x.opp)+' · '+esc(x.mg)+'</span><span>'+new Date(x.d).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>').join('')||'<div class="row">Sin partidas todavía</div>')+
+'<h3>💰 Historial de puntos</h3>'+(h.slice(-40).reverse().map(x=>'<div class="row"><span>'+(x.m?(x.m>0?'+':'')+x.m+'💰 ':'')+(x.t?(x.t>0?'+':'')+x.t+'🎟':'')+'</span><span style="text-align:right;font-weight:normal">'+esc(x.r).slice(0,80)+'</span></div>').join('')||'<div class="row">Sin movimientos todavía</div>')+
+'<div style="text-align:center;margin-top:10px"><button onclick="document.getElementById(\'pan\').style.display=\'none\'">CERRAR</button></div>';
+document.getElementById('pan').style.display='flex';
+const inv=document.getElementById('inv');if(inv)inv.onclick=()=>{const u='https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent('¡Juega conmigo a Vending Town!');try{tg.openTelegramLink(u)}catch(e){}};
+const cp=document.getElementById('cp');if(cp)cp.onclick=()=>{try{navigator.clipboard.writeText(link);cp.textContent='✅ COPIADO'}catch(e){}};
+api({action:'stats'}).then(r=>{if(r&&r.ok){rc.textContent=r.referrals;re.textContent=r.earned}})};
+document.getElementById('vtbar').addEventListener('click',openPanel)})();</script>
 </body></html>
