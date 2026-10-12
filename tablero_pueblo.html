@@ -905,4 +905,17 @@ if(k==='wallpaper'){if(await wallpaper())mark('wallpaper')}
 if(k==='ad'){const prev=window.VT_GAME;window.VT_GAME='tablero';const v=await (window.ADS?ADS.reward('daily'):Promise.resolve(false));window.VT_GAME=prev;if(v)mark('ad');else b.textContent='No completado'}
 draw()})}
 window.DAILY={render:el=>{box=el;draw();call({action:'state'}).then(r=>{if(r&&r.ok){st={done:r.done||[],once:r.once||[],streak:r.streak||0};localStorage.setItem('vt_streak',st.streak);draw()}});try{TIP('daily')}catch(e){}}}})();</script>
+<style id="mg-theme">
+.th-fantasia .pmg{border:4px solid #2a1a0e!important;box-shadow:0 0 0 3px #f3c33b,0 8px 0 #2a1a0e!important;border-radius:22px!important;font-family:'MedievalSharp',Georgia,serif!important}
+.th-fantasia .pmg canvas{filter:sepia(.28) saturate(1.1) contrast(1.03)}
+.th-fantasia .pmg .ov{background:radial-gradient(circle at 50% 30%,rgba(59,95,150,.94),rgba(20,33,61,.97))!important}
+.th-fantasia .pmg h2{font-family:'Cinzel Decorative',serif!important;color:#f3c33b;text-shadow:0 3px 0 #2a1a0e,0 0 12px rgba(243,195,59,.6)!important}
+.th-fantasia .pmg button{background:linear-gradient(#ffd76a,#e0a52b 55%,#b9781a)!important;color:#2a1a0e!important;border-color:#2a1a0e!important;font-family:'Cinzel Decorative',serif!important}
+.th-halloween .pmg{border:4px solid #120a1c!important;box-shadow:0 0 0 3px #ff8a1f,0 8px 0 #0a0510!important;border-radius:22px!important}
+.th-halloween .pmg canvas{filter:hue-rotate(-35deg) saturate(1.25) brightness(.88)}
+.th-halloween .pmg .ov{background:radial-gradient(circle at 50% 30%,rgba(90,42,122,.94),rgba(18,10,28,.97))!important}
+.th-halloween .pmg h2{color:#ff9a3a;text-shadow:0 3px 0 #120a1c,0 0 14px #9fe870!important}
+.th-halloween .pmg button{background:linear-gradient(#ffb36a,#ff7a1a 55%,#c0501a)!important;color:#1a0f24!important}
+@media (prefers-reduced-motion:reduce){.pmg .ic{animation:none!important}}.th-fantasia #mgb button{background:linear-gradient(#ffd76a,#e0a52b 55%,#b9781a)!important;color:#2a1a0e!important}.th-halloween #mgb button{background:linear-gradient(#ffb36a,#ff7a1a 55%,#c0501a)!important;color:#1a0f24!important}
+</style>
 </body></html>
